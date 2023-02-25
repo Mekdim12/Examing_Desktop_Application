@@ -17,6 +17,7 @@ migrate_working_dir/
 .idea/
 *.png
 *.jpg
+.env
 
 
 
