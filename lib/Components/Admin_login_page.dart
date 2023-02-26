@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import './privillageChoosingPage.dart';
+import './adminLandingPage.dart';
 
 class AdminLoginPageWidget extends StatefulWidget {
   const AdminLoginPageWidget({super.key});
@@ -275,6 +276,12 @@ class AdminLoginPageState extends State<AdminLoginPageWidget> {
                                   dotenv.env['password'])) {
                                 _password_correct = true;
                                 _password_error = false;
+
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (ctx) {
+                                    return AdminLandingPageWidget();
+                                  }),
+                                );
                               } else {
                                 _password_correct = false;
                                 _password_error = true;
