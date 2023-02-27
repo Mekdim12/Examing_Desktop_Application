@@ -300,7 +300,7 @@ class AdminLoginPageState extends State<AdminLoginPageWidget> {
                             });
                           },
                           child: const Text(
-                            "Add Purchase",
+                            "Login",
                             style: TextStyle(
                                 color: Color.fromARGB(255, 250, 249, 251),
                                 fontWeight: FontWeight.bold),
