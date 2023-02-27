@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './adminTypeOfQuestionChossingPage.dart';
+import '../Models/QuestionModel.dart';
 
 class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
   const TextBasedQuestionInsertingPageWidget({super.key});
@@ -11,8 +12,66 @@ class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
 
 class TextBasedQuestionInsertingPageState
     extends State<TextBasedQuestionInsertingPageWidget> {
-  Widget choice_widget_builder(String labelText) {
+  Future openDialog() => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            buttonPadding: const EdgeInsets.all(5),
+            contentPadding: const EdgeInsets.all(15),
+            title: const Text("Success Full Operation"),
+            elevation: 8,
+            icon: const Icon(Icons.gpp_good),
+            iconColor: Colors.greenAccent,
+            // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+            contentTextStyle: const TextStyle(
+                color: Color.fromARGB(255, 25, 57, 42),
+                fontWeight: FontWeight.bold),
+            content: Container(
+              alignment: Alignment.center,
+              width: 150,
+              height: 150,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: const Text(
+                textAlign: TextAlign.center,
+                "You Have Success-fully Inserted quesion to the Database",
+              ),
+            ),
+
+            actions: [
+              ElevatedButton.icon(
+                  style: const ButtonStyle(
+                      padding: MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: MaterialStatePropertyAll(Colors.black),
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.greenAccent)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.close),
+                  label: const Text(
+                    "Close",
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ))
+            ],
+          ));
+  void question_saver_to_db(String question, String choice_a, String choice_b,
+      String choice_c, String choice_d, String correctAnswer) {
+    List answers = [choice_a, choice_b, choice_c, choice_d];
+    final question_object = Question(1, question, answers, correctAnswer);
+
+    final db = QuestionBox.getAllTheQuestions();
+    Future<int> obj = db.add(question_object);
+    // calling up the diaglog if successfull
+    obj.then((value) => openDialog());
+  }
+
+  Widget choice_widget_builder(
+      String labelText, TextEditingController controller_field) {
     return TextField(
+      controller: controller_field,
       maxLines: 2,
       minLines: 1,
       style: const TextStyle(
@@ -41,6 +100,12 @@ class TextBasedQuestionInsertingPageState
 
   @override
   Widget build(BuildContext context) {
+    final question_controller = TextEditingController();
+    final choice_a_controller = TextEditingController();
+    final choice_b_controller = TextEditingController();
+    final choice_c_controller = TextEditingController();
+    final choice_d_controller = TextEditingController();
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -138,6 +203,7 @@ class TextBasedQuestionInsertingPageState
                         margin: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       TextField(
+                        controller: question_controller,
                         maxLines: 3,
                         minLines: 1,
                         style: const TextStyle(
@@ -171,7 +237,8 @@ class TextBasedQuestionInsertingPageState
                           Flexible(
                             child: Container(
                               width: 600,
-                              child: choice_widget_builder('Enter choice A'),
+                              child: choice_widget_builder(
+                                  'Enter choice A', choice_a_controller),
                             ),
                           ),
                           Container(
@@ -180,7 +247,8 @@ class TextBasedQuestionInsertingPageState
                           Flexible(
                             child: Container(
                                 width: 600,
-                                child: choice_widget_builder('Enter choice C')),
+                                child: choice_widget_builder(
+                                    'Enter choice C', choice_c_controller)),
                           ),
                         ],
                       ),
@@ -190,7 +258,8 @@ class TextBasedQuestionInsertingPageState
                           Flexible(
                             child: Container(
                               width: 600,
-                              child: choice_widget_builder('Enter choice B'),
+                              child: choice_widget_builder(
+                                  'Enter choice B', choice_b_controller),
                             ),
                           ),
                           Container(
@@ -199,7 +268,8 @@ class TextBasedQuestionInsertingPageState
                           Flexible(
                             child: Container(
                               width: 600,
-                              child: choice_widget_builder('Enter choice D'),
+                              child: choice_widget_builder(
+                                  'Enter choice D', choice_d_controller),
                             ),
                           )
                         ],
@@ -308,7 +378,23 @@ class TextBasedQuestionInsertingPageState
                                         horizontal: 50, vertical: 20),
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  question_saver_to_db(
+                                      question_controller.text,
+                                      choice_a_controller.text,
+                                      choice_b_controller.text,
+                                      choice_c_controller.text,
+                                      choice_d_controller.text,
+                                      choice);
+                                  question_controller.clear();
+                                  choice_a_controller.clear();
+                                  choice_b_controller.clear();
+                                  choice_c_controller.clear();
+                                  choice_d_controller.clear();
+                                  setState(() {
+                                    choice = 'A';
+                                  });
+                                },
                               ),
                             ),
                           ],
