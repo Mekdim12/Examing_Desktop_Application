@@ -18,8 +18,10 @@ class QuestionAdapter extends TypeAdapter<Question> {
     };
     return Question(
       fields[0] as int,
-      fields[1] as String,
-      (fields[2] as List).cast<dynamic>(),
+      (fields[1] as Map).cast<int, String>(),
+      (fields[2] as List)
+          .map((dynamic e) => (e as Map).cast<int, String>())
+          .toList(),
       fields[3] as String,
     );
   }

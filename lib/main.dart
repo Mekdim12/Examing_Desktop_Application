@@ -14,7 +14,7 @@ Future<void> main() async {
   Hive.registerAdapter(QuestionAdapter());
 
   // creating Question Information Box For Holding All The Questions
-  await Hive.openBox<Question>('QuestionInformatioBox');
+  await Hive.openBox<Question>('QuestionInformatioModel');
 
   runApp(MyMainHompePage());
 }

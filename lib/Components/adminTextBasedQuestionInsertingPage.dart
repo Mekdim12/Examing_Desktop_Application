@@ -12,16 +12,28 @@ class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
 
 class TextBasedQuestionInsertingPageState
     extends State<TextBasedQuestionInsertingPageWidget> {
-  Future openDialog() => showDialog(
+  Future openDialog(bool good_or_bad) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
             actionsAlignment: MainAxisAlignment.center,
             buttonPadding: const EdgeInsets.all(5),
             contentPadding: const EdgeInsets.all(15),
-            title: const Text("Success Full Operation"),
+            title: (good_or_bad)
+                ? const Text("Success-Full Operation")
+                : const Text("Unsuccess-Full Operation"),
             elevation: 8,
-            icon: const Icon(Icons.gpp_good),
-            iconColor: Colors.greenAccent,
+            icon: (good_or_bad)
+                ? const Icon(
+                    Icons.gpp_good,
+                    weight: 50,
+                    size: 50,
+                  )
+                : const Icon(
+                    Icons.gpp_bad,
+                    weight: 50,
+                    size: 50,
+                  ),
+            iconColor: (good_or_bad) ? Colors.greenAccent : Colors.redAccent,
             // backgroundColor: Color.fromARGB(225, 241, 237, 237),
             contentTextStyle: const TextStyle(
                 color: Color.fromARGB(255, 25, 57, 42),
@@ -31,20 +43,23 @@ class TextBasedQuestionInsertingPageState
               width: 150,
               height: 150,
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-              child: const Text(
+              child: Text(
                 textAlign: TextAlign.center,
-                "You Have Success-fully Inserted quesion to the Database",
+                (good_or_bad)
+                    ? "You Have Success-fully Inserted quesion to the Database"
+                    : "The Operation Failed and The Data You Entered Is Not Inserted On The Database",
               ),
             ),
 
             actions: [
               ElevatedButton.icon(
-                  style: const ButtonStyle(
-                      padding: MaterialStatePropertyAll(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
                           EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
                       iconColor: MaterialStatePropertyAll(Colors.black),
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.greenAccent)),
+                      backgroundColor: MaterialStatePropertyAll((good_or_bad)
+                          ? Colors.greenAccent
+                          : Colors.redAccent)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -57,15 +72,32 @@ class TextBasedQuestionInsertingPageState
                   ))
             ],
           ));
-  void question_saver_to_db(String question, String choice_a, String choice_b,
-      String choice_c, String choice_d, String correctAnswer) {
-    List answers = [choice_a, choice_b, choice_c, choice_d];
-    final question_object = Question(1, question, answers, correctAnswer);
 
-    final db = QuestionBox.getAllTheQuestions();
-    Future<int> obj = db.add(question_object);
-    // calling up the diaglog if successfull
-    obj.then((value) => openDialog());
+  bool question_saver_to_db(String question, String choice_a, String choice_b,
+      String choice_c, String choice_d, String correctAnswer) {
+    final question_object = Question(
+        // 1 : implies that the text containe an text based question or answer[choice]
+        1,
+        {1: question},
+        [
+          {1: choice_a},
+          {1: choice_b},
+          {1: choice_c},
+          {1: choice_d},
+        ],
+        correctAnswer);
+
+    try {
+      final db = QuestionBox.getAllTheQuestions();
+      Future<int> obj = db.add(question_object);
+      // calling up the diaglog if successfull
+      obj.then((value) => openDialog(true));
+      return true;
+    } catch (Exception) {
+      openDialog(false);
+    }
+
+    return false;
   }
 
   Widget choice_widget_builder(
@@ -303,63 +335,7 @@ class TextBasedQuestionInsertingPageState
                                   width: 120,
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 25),
-                                  child: DropdownButton(
-                                    dropdownColor:
-                                        Color.fromARGB(170, 105, 240, 175),
-                                    isExpanded: true,
-                                    iconEnabledColor: Colors.green,
-                                    iconSize: 30,
-                                    icon: Icon(Icons.menu_book),
-                                    value: choice,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        choice = val!;
-                                      });
-                                    },
-                                    items: const [
-                                      DropdownMenuItem(
-                                        alignment: Alignment.center,
-                                        value: 'A',
-                                        child: Text(
-                                          'A',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontFamily: 'quickSand',
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DropdownMenuItem(
-                                        alignment: Alignment.center,
-                                        value: 'B',
-                                        child: Text(
-                                          'B',
-                                          style: TextStyle(
-                                              fontFamily: 'quickSand',
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DropdownMenuItem(
-                                        alignment: Alignment.center,
-                                        value: 'C',
-                                        child: Text(
-                                          'C',
-                                          style: TextStyle(
-                                              fontFamily: 'quickSand',
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DropdownMenuItem(
-                                        alignment: Alignment.center,
-                                        value: 'D',
-                                        child: Text(
-                                          'D',
-                                          style: TextStyle(
-                                              fontFamily: 'quickSand',
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  child: DropDownButtonWidget(),
                                 ),
                               ],
                             ),
@@ -379,21 +355,22 @@ class TextBasedQuestionInsertingPageState
                                   ),
                                 ),
                                 onPressed: () {
-                                  question_saver_to_db(
+                                  if (question_saver_to_db(
                                       question_controller.text,
                                       choice_a_controller.text,
                                       choice_b_controller.text,
                                       choice_c_controller.text,
                                       choice_d_controller.text,
-                                      choice);
-                                  question_controller.clear();
-                                  choice_a_controller.clear();
-                                  choice_b_controller.clear();
-                                  choice_c_controller.clear();
-                                  choice_d_controller.clear();
-                                  setState(() {
-                                    choice = 'A';
-                                  });
+                                      choice)) {
+                                    question_controller.clear();
+                                    choice_a_controller.clear();
+                                    choice_b_controller.clear();
+                                    choice_c_controller.clear();
+                                    choice_d_controller.clear();
+                                    setState(() {
+                                      choice = 'A';
+                                    });
+                                  }
                                 },
                               ),
                             ),
@@ -408,6 +385,72 @@ class TextBasedQuestionInsertingPageState
           ),
         ),
       ),
+    );
+  }
+}
+
+class DropDownButtonWidget extends StatefulWidget {
+  const DropDownButtonWidget({super.key});
+
+  @override
+  State<DropDownButtonWidget> createState() => _DropDownButtonState();
+}
+
+class _DropDownButtonState extends State<DropDownButtonWidget> {
+  String choice = 'A';
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+      dropdownColor: Color.fromARGB(170, 105, 240, 175),
+      isExpanded: true,
+      iconEnabledColor: Colors.green,
+      iconSize: 30,
+      icon: Icon(Icons.menu_book),
+      value: choice,
+      onChanged: (val) {
+        setState(() {
+          choice = val!;
+        });
+      },
+      items: const [
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: 'A',
+          child: Text(
+            'A',
+            textAlign: TextAlign.center,
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: 'B',
+          child: Text(
+            'B',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: 'C',
+          child: Text(
+            'C',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: 'D',
+          child: Text(
+            'D',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

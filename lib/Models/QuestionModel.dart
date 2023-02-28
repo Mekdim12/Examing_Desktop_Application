@@ -7,18 +7,19 @@ class Question extends HiveObject {
   late int exam_type;
 
   @HiveField(1)
-  late String question;
+  late Map<int, String> question;
 
   @HiveField(2)
-  late List list_choice;
+  late List<Map<int, String>> list_choice;
 
   @HiveField(3)
   late String correct_answer;
+
   Question(
       this.exam_type, this.question, this.list_choice, this.correct_answer);
 }
 
 class QuestionBox {
   static Box<Question> getAllTheQuestions() =>
-      Hive.box<Question>('QuestionInformatioBox');
+      Hive.box<Question>('QuestionInformatioModel');
 }

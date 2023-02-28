@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './adminQuestionManagementMenuPage.dart';
 import './adminTextBasedQuestionInsertingPage.dart';
+import './adminImageBasedQuestionInsertingPage.dart';
 
 class QuestionTypeChoosingPage extends StatelessWidget {
   const QuestionTypeChoosingPage({super.key});
@@ -119,7 +120,7 @@ class QuestionTypeChoosingPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(builder: (ctx) {
-                            return QuestionTypeChoosingPage();
+                            return ImageBasedQuesionInsertingPageWidget();
                           }));
                         },
                       ),
