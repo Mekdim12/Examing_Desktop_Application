@@ -15,7 +15,7 @@ Future<void> main() async {
 
   // creating Question Information Box For Holding All The Questions
   await Hive.openBox<Question>('QuestionInformatioModel');
-
+  await Hive.openBox('CurrenWorkingDirectory');
   runApp(MyMainHompePage());
 }
 

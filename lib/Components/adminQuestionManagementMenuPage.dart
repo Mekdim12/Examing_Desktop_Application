@@ -1,12 +1,104 @@
 import 'package:flutter/material.dart';
 import './sideBarDrawer.dart';
 import './adminTypeOfQuestionChossingPage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class QuestionManagementLandingPage extends StatelessWidget {
+class QuestionManagementLandingPage extends StatefulWidget {
   const QuestionManagementLandingPage({super.key});
 
   @override
+  State<QuestionManagementLandingPage> createState() =>
+      _QuestionManagementLandingPageState();
+}
+
+class _QuestionManagementLandingPageState
+    extends State<QuestionManagementLandingPage> {
+  bool is_CWD_file_located = false;
+
+  //  uncomment context
+  // and custmoize the pop for te already settep flag of the path as pop up
+  Future openDialog(bool good_or_bad, int flag) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            buttonPadding: const EdgeInsets.all(5),
+            contentPadding: const EdgeInsets.all(15),
+            title: (flag == 1)
+                ? const Text("Notification")
+                : (good_or_bad)
+                    ? const Text("Success-Full Set Path")
+                    : const Text("Unsuccess-Full  Operation"),
+            elevation: 8,
+            icon: (good_or_bad)
+                ? const Icon(
+                    Icons.gpp_good,
+                    weight: 50,
+                    size: 50,
+                  )
+                : const Icon(
+                    Icons.gpp_bad,
+                    weight: 50,
+                    size: 50,
+                  ),
+            iconColor: (flag == 1)
+                ? Colors.amberAccent
+                : (good_or_bad)
+                    ? Colors.greenAccent
+                    : Colors.redAccent,
+            // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+            contentTextStyle: const TextStyle(
+                color: Color.fromARGB(255, 25, 57, 42),
+                fontWeight: FontWeight.bold),
+            content: Container(
+              alignment: Alignment.center,
+              width: 150,
+              height: 150,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Text(
+                textAlign: TextAlign.center,
+                (flag == 1)
+                    ? "You Have Already Set The Working Directory If You Really Want Change that Long Press The Button it will open the modal"
+                    : (good_or_bad)
+                        ? "You Have Success-fully Located Your Application Path"
+                        : "The Operation Failed and The path You Located Can't Seem To BE Located",
+              ),
+            ),
+
+            actions: [
+              ElevatedButton.icon(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: MaterialStatePropertyAll(Colors.black),
+                      backgroundColor: MaterialStatePropertyAll((good_or_bad)
+                          ? Colors.greenAccent
+                          : Colors.redAccent)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.close),
+                  label: Text(
+                    (flag == 1)
+                        ? "okay"
+                        : (good_or_bad)
+                            ? "Close"
+                            : "Try Again",
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                  ))
+            ],
+          ));
+
+  @override
   Widget build(BuildContext context) {
+    if (Hive.box('CurrenWorkingDirectory').get('cwd') != null) {
+      is_CWD_file_located = true;
+    } else {
+      is_CWD_file_located = false;
+    }
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -80,9 +172,7 @@ class QuestionManagementLandingPage extends StatelessWidget {
                           padding: MaterialStateProperty.all(
                               const EdgeInsets.symmetric(
                                   horizontal: 100, vertical: 25))),
-                      onPressed: () {
-                        
-                      },
+                      onPressed: (is_CWD_file_located) ? () {} : null,
                     ),
                   ),
                   Container(
@@ -96,14 +186,83 @@ class QuestionManagementLandingPage extends StatelessWidget {
                           padding: MaterialStateProperty.all(
                               const EdgeInsets.symmetric(
                                   horizontal: 112, vertical: 25))),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushReplacement(MaterialPageRoute(builder: (ctx) {
-                          return QuestionTypeChoosingPage();
-                        }));
-                      },
+                      onPressed: (is_CWD_file_located)
+                          ? () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (ctx) {
+                                return QuestionTypeChoosingPage();
+                              }));
+                            }
+                          : null,
                     ),
                   ),
+                  Container(
+                    margin: EdgeInsets.only(top: 50),
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              style: const ButtonStyle(
+                                  padding: MaterialStatePropertyAll(
+                                      EdgeInsets.symmetric(
+                                          horizontal: 50, vertical: 20))),
+                              onPressed: (is_CWD_file_located)
+                                  ? () {
+                                      openDialog(true, 1);
+                                    }
+                                  : () async {
+                                      var folder_for_file = await FilePicker
+                                          .platform
+                                          .getDirectoryPath();
+                                      try {
+                                        var CWD =
+                                            Hive.box('CurrenWorkingDirectory');
+
+                                        Future<void> fulture_cwd =
+                                            CWD.put('cwd', folder_for_file);
+                                        fulture_cwd.then(
+                                          (value) {
+                                            openDialog(true, 0);
+                                            setState(() {
+                                              is_CWD_file_located = true;
+                                            });
+                                          },
+                                        );
+                                      } catch (Exception) {
+                                        openDialog(false, 0);
+                                      }
+                                    },
+                              onLongPress: (is_CWD_file_located)
+                                  ? () async {
+                                      var folder_for_file = await FilePicker
+                                          .platform
+                                          .getDirectoryPath();
+                                      try {
+                                        var CWD =
+                                            Hive.box('CurrenWorkingDirectory');
+                                        Future<void> fulture_cwd =
+                                            CWD.put('cwd', folder_for_file);
+                                        openDialog(true, 0);
+                                        setState(() {
+                                          is_CWD_file_located = true;
+                                        });
+                                      } catch (Exception) {
+                                        openDialog(false, 0);
+                                      }
+                                    }
+                                  : null,
+                              icon: const Icon(Icons.upload),
+                              label: const Text('Locate Installation Folder'),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
