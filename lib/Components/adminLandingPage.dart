@@ -16,9 +16,9 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
     "Not Finished Exams": 18.4
   };
   List<Color> listoFColor = [
-    const Color(0xFF3D5656),
-    const Color(0xFFDC3535),
-    const Color(0xFF5F8D4E)
+    const Color(0xFFEC6B56),
+    const Color(0xFF47B39C),
+    const Color(0xFFFFC154),
   ];
 
   @override
@@ -50,7 +50,13 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          color: const Color(0xFFF5EBE0),
+          // color: const Color(0xFFF5EBE0),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage('assets/images/backgroundEntrance.jpg'),
+            ),
+          ),
           child: Column(
             children: [
               Row(
@@ -307,6 +313,7 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
               Center(
                 child: PieChart(
                   legendOptions: LegendOptions(
+                      legendTextStyle: TextStyle(color: Colors.white),
                       legendPosition: LegendPosition.bottom,
                       showLegendsInRow: true),
                   ringStrokeWidth: 45,

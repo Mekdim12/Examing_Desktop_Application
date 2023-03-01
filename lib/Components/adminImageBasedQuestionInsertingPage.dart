@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import './adminTypeOfQuestionChossingPage.dart';
 import '../Models/QuestionModel.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:math';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ImageBasedQuesionInsertingPageWidget extends StatefulWidget {
   const ImageBasedQuesionInsertingPageWidget({super.key});
@@ -12,6 +18,8 @@ class ImageBasedQuesionInsertingPageWidget extends StatefulWidget {
   State<ImageBasedQuesionInsertingPageWidget> createState() =>
       _ImageBasedQuesionInsertingPageState();
 }
+
+String choice = 'A';
 
 class _ImageBasedQuesionInsertingPageState
     extends State<ImageBasedQuesionInsertingPageWidget> {
@@ -23,10 +31,19 @@ class _ImageBasedQuesionInsertingPageState
 
   bool is_question_an_image = false;
   String question_text = "Enter The Question Here ?";
+  String absolute_path_question = "";
   bool is_choice_a_an_image = false;
+  String choice_a_text = 'Enter choice A';
+  String absolute_path_a = "";
   bool is_choice_b_an_image = false;
+  String choice_b_text = 'Enter choice B';
+  String absolute_path_b = "";
   bool is_choice_c_an_image = false;
+  String choice_c_text = 'Enter choice C';
+  String absolute_path_c = "";
   bool is_choice_d_an_image = false;
+  String choice_d_text = 'Enter choice D';
+  String absolute_path_d = "";
 
   Future openDialog(bool good_or_bad) => showDialog(
       context: context,
@@ -89,25 +106,103 @@ class _ImageBasedQuesionInsertingPageState
             ],
           ));
 
-  bool question_saver_to_db(String question, String choice_a, String choice_b,
-      String choice_c, String choice_d, String correctAnswer) {
-    final question_object = Question(
-        // 1 : implies that the text containe an text based question or answer[choice]
-        1,
-        {1: question},
-        [
-          {1: choice_a},
-          {1: choice_b},
-          {1: choice_c},
-          {1: choice_d},
-        ],
-        correctAnswer);
+  Map<int, String> item_to_put_into_db_formmater(questionAndAns_data) {
+    int randomNumberGenerated = Random().nextInt(1000000000);
+
+    File imageFile = File(questionAndAns_data.values
+        .toString()
+        .replaceAll('(', '')
+        .replaceAll(')', ''));
+
+    String filename =
+        "${imageFile.uri.pathSegments.last.split('.')[0]}$randomNumberGenerated";
+    String filextension = imageFile.uri.pathSegments.last.split('.')[1];
+
+    String fullName = "$filename.$filextension";
+    String get_cwd_from_box = Hive.box('CurrenWorkingDirectory').get('cwd');
+
+    if (get_cwd_from_box != null) {
+      Directory cwd = Directory('$get_cwd_from_box/CopiedFileAssets');
+
+      if (cwd.existsSync()) {
+        try {
+          imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
+          return {2: fullName};
+        } catch (Exception) {
+          return {};
+        }
+      } else {
+        cwd.create();
+      }
+    }
+
+    return {};
+  }
+
+  bool question_saver_to_db(List questionAndAns_data, String correctAnswer) {
+    List temp_choice_holder = [];
+    Map temp_question = new Map<int, String>();
+
+    try {
+      for (int index = 0; index < questionAndAns_data.length; index++) {
+        if (index == 4) {
+          // the text question text or data
+          if (questionAndAns_data[index].containsKey(2)) {
+            temp_question =
+                item_to_put_into_db_formmater(questionAndAns_data[index]);
+          } else {
+            temp_question = questionAndAns_data[index];
+          }
+        } else {
+          if (questionAndAns_data[index].containsKey(2)) {
+            // its image
+            temp_choice_holder
+                .add(item_to_put_into_db_formmater(questionAndAns_data[index]));
+          } else {
+            temp_choice_holder.add(questionAndAns_data[index]);
+          }
+        }
+      }
+    } catch (Exception) {
+      openDialog(false);
+    }
+
+    Question question_object = Question(
+      // 1 : implies that the text containe an text based question or answer[choice]
+      // 2 : implies that the image containe an image based question or answer[choice]
+      2,
+      temp_question.cast(),
+      temp_choice_holder.cast(),
+      correctAnswer,
+    );
 
     try {
       final db = QuestionBox.getAllTheQuestions();
+
       Future<int> obj = db.add(question_object);
+
       // calling up the diaglog if successfull
-      obj.then((value) => openDialog(true));
+
+      obj.then((value) {
+        openDialog(true);
+        setState(() {
+          is_question_an_image = false;
+          question_text = "Enter The Question Here ?";
+          absolute_path_question = "";
+          is_choice_a_an_image = false;
+          choice_a_text = 'Enter choice A';
+          absolute_path_a = "";
+          is_choice_b_an_image = false;
+          choice_b_text = 'Enter choice B';
+          absolute_path_b = "";
+          is_choice_c_an_image = false;
+          choice_c_text = 'Enter choice C';
+          absolute_path_c = "";
+          is_choice_d_an_image = false;
+          choice_d_text = 'Enter choice D';
+          absolute_path_d = "";
+        });
+      });
       return true;
     } catch (Exception) {
       openDialog(false);
@@ -116,9 +211,10 @@ class _ImageBasedQuesionInsertingPageState
     return false;
   }
 
-  Widget choice_widget_builder(
-      String labelText, TextEditingController controller_field) {
+  Widget choice_widget_builder(String labelText,
+      TextEditingController controller_field, bool enable_checker) {
     return TextField(
+      enabled: !enable_checker,
       controller: controller_field,
       maxLines: 2,
       minLines: 1,
@@ -144,8 +240,6 @@ class _ImageBasedQuesionInsertingPageState
     'C',
     'D',
   ];
-
-  String choice = 'A';
 
   @override
   Widget build(BuildContext context) {
@@ -256,9 +350,6 @@ class _ImageBasedQuesionInsertingPageState
                                       Color.fromARGB(172, 105, 240, 175))),
                               onPressed: (is_question_an_image)
                                   ? () async {
-                                      Directory beforeUpload =
-                                          Directory.current;
-
                                       FilePickerResult? result =
                                           await FilePicker.platform.pickFiles(
                                         type: FileType.image,
@@ -267,29 +358,12 @@ class _ImageBasedQuesionInsertingPageState
                                       );
 
                                       if (result != null) {
+                                        absolute_path_question =
+                                            result.files.single.path as String;
                                         setState(() {
                                           question_text =
                                               result.files.single.name;
                                         });
-
-                                        // print(result.files.single.name);
-                                        // print(result.files.single.size);
-                                        // print(result.files.single.extension);
-                                        // print(result.files.single.path);
-
-                                        // print("----------------------------");
-                                        // Directory cwd = Directory('SomeFolder');
-
-                                        // cwd.create(recursive: false);
-
-                                        // print(beforeUpload.path);
-                                        // print(cwd);
-
-                                        // print("----------------------------");
-
-                                        // File file =
-                                        //     File(result.files.single.path as String);
-                                        //     file.copy('')
                                       } else {
                                         // nothing reall Got Picked
                                       }
@@ -298,27 +372,30 @@ class _ImageBasedQuesionInsertingPageState
                               icon: const Icon(Icons.attach_file),
                               label: const Text("Upload Image")),
                           Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 5),
-                              child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    if (is_question_an_image) {
-                                      is_question_an_image = false;
-                                      question_text =
-                                          "Enter The Question Here ?";
-                                    } else {
-                                      is_question_an_image = true;
-                                    }
-                                    setState(() {
-                                      is_question_an_image;
-                                      question_text;
-                                    });
-                                  },
-                                  icon: const Icon(Icons.compare_arrows,
-                                      color: Colors.white, size: 30),
-                                  label: const Text(''))),
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 0),
+                            child: ElevatedButton.icon(
+                              style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Colors.transparent)),
+                              onPressed: () {
+                                if (is_question_an_image) {
+                                  is_question_an_image = false;
+                                  question_text = "Enter The Question Here ?";
+                                } else {
+                                  is_question_an_image = true;
+                                }
+                                setState(() {
+                                  is_question_an_image;
+                                  question_text;
+                                });
+                              },
+                              icon: const Icon(Icons.compare_arrows,
+                                  color: Colors.greenAccent, size: 35),
+                              label: const Text(''),
+                            ),
+                          ),
                           Container(
                             width: 800,
                             child: TextField(
@@ -357,9 +434,27 @@ class _ImageBasedQuesionInsertingPageState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 5),
+                            margin: const EdgeInsets.only(right: 5),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: (is_choice_a_an_image)
+                                  ? () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                        dialogTitle:
+                                            'Question and Answer Image picking ',
+                                      );
+
+                                      if (result != null) {
+                                        setState(() {
+                                          absolute_path_a = result
+                                              .files.single.path as String;
+                                          choice_a_text =
+                                              result.files.single.name;
+                                        });
+                                      }
+                                    }
+                                  : null,
                               icon: const Icon(Icons.attach_file),
                               label: const Text("Upload"),
                               style: const ButtonStyle(
@@ -373,19 +468,34 @@ class _ImageBasedQuesionInsertingPageState
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 5),
+                                vertical: 20, horizontal: 0),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Colors.transparent)),
+                              onPressed: () {
+                                if (is_choice_a_an_image) {
+                                  is_choice_a_an_image = false;
+                                  choice_a_text = "Enter Choice A ?";
+                                } else {
+                                  is_choice_a_an_image = true;
+                                }
+
+                                setState(() {
+                                  is_choice_a_an_image;
+                                  choice_a_text;
+                                });
+                              },
                               icon: const Icon(Icons.compare_arrows,
-                                  color: Colors.white, size: 20),
+                                  color: Colors.greenAccent, size: 35),
                               label: const Text(''),
                             ),
                           ),
                           Flexible(
                             child: Container(
                               width: 500,
-                              child: choice_widget_builder(
-                                  'Enter choice A', choice_a_controller),
+                              child: choice_widget_builder(choice_a_text,
+                                  choice_a_controller, is_choice_a_an_image),
                             ),
                           ),
                           Container(
@@ -395,7 +505,25 @@ class _ImageBasedQuesionInsertingPageState
                           Container(
                             margin: EdgeInsets.only(right: 5),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: (is_choice_c_an_image)
+                                  ? () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                        dialogTitle:
+                                            'Question and Answer Image picking ',
+                                      );
+
+                                      if (result != null) {
+                                        setState(() {
+                                          absolute_path_c = result
+                                              .files.single.path as String;
+                                          choice_c_text =
+                                              result.files.single.name;
+                                        });
+                                      }
+                                    }
+                                  : null,
                               icon: const Icon(Icons.attach_file),
                               label: const Text("Upload"),
                               style: const ButtonStyle(
@@ -409,19 +537,34 @@ class _ImageBasedQuesionInsertingPageState
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 2),
+                                vertical: 20, horizontal: 0),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Colors.transparent)),
+                              onPressed: () {
+                                if (is_choice_c_an_image) {
+                                  is_choice_c_an_image = false;
+                                  choice_c_text = "Enter Choice C ?";
+                                } else {
+                                  is_choice_c_an_image = true;
+                                }
+
+                                setState(() {
+                                  is_choice_c_an_image;
+                                  choice_c_text;
+                                });
+                              },
                               icon: const Icon(Icons.compare_arrows,
-                                  color: Colors.white, size: 20),
+                                  color: Colors.greenAccent, size: 35),
                               label: const Text(''),
                             ),
                           ),
                           Flexible(
                             child: Container(
                                 width: 500,
-                                child: choice_widget_builder(
-                                    'Enter choice C', choice_c_controller)),
+                                child: choice_widget_builder(choice_c_text,
+                                    choice_c_controller, is_choice_c_an_image)),
                           ),
                         ],
                       ),
@@ -429,9 +572,27 @@ class _ImageBasedQuesionInsertingPageState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 5),
+                            margin: const EdgeInsets.only(right: 5),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: (is_choice_b_an_image)
+                                  ? () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                        dialogTitle:
+                                            'Question and Answer Image picking ',
+                                      );
+
+                                      if (result != null) {
+                                        setState(() {
+                                          absolute_path_b = result
+                                              .files.single.path as String;
+                                          choice_b_text =
+                                              result.files.single.name;
+                                        });
+                                      }
+                                    }
+                                  : null,
                               icon: const Icon(Icons.attach_file),
                               label: const Text("Upload"),
                               style: const ButtonStyle(
@@ -445,19 +606,34 @@ class _ImageBasedQuesionInsertingPageState
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 5),
+                                vertical: 20, horizontal: 0),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Colors.transparent)),
+                              onPressed: () {
+                                if (is_choice_b_an_image) {
+                                  is_choice_b_an_image = false;
+                                  choice_b_text = "Enter Choice B ?";
+                                } else {
+                                  is_choice_b_an_image = true;
+                                }
+
+                                setState(() {
+                                  is_choice_b_an_image;
+                                  choice_b_text;
+                                });
+                              },
                               icon: const Icon(Icons.compare_arrows,
-                                  color: Colors.white, size: 20),
+                                  color: Colors.greenAccent, size: 35),
                               label: const Text(''),
                             ),
                           ),
                           Flexible(
                             child: Container(
                               width: 600,
-                              child: choice_widget_builder(
-                                  'Enter choice B', choice_b_controller),
+                              child: choice_widget_builder(choice_b_text,
+                                  choice_b_controller, is_choice_b_an_image),
                             ),
                           ),
                           Container(
@@ -465,37 +641,71 @@ class _ImageBasedQuesionInsertingPageState
                                 vertical: 80, horizontal: 50),
                           ),
                           Container(
-                            margin: EdgeInsets.only(right: 5),
+                            margin: const EdgeInsets.only(right: 5),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: (is_choice_d_an_image)
+                                  ? () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                        dialogTitle:
+                                            'Question and Answer Image picking ',
+                                      );
+
+                                      if (result != null) {
+                                        setState(() {
+                                          absolute_path_d = result
+                                              .files.single.path as String;
+                                          choice_d_text =
+                                              result.files.single.name;
+                                        });
+                                      }
+                                    }
+                                  : null,
                               icon: const Icon(Icons.attach_file),
                               label: const Text("Upload"),
                               style: const ButtonStyle(
-                                  padding: MaterialStatePropertyAll(
-                                      EdgeInsets.symmetric(
-                                          vertical: 15, horizontal: 10)),
-                                  backgroundColor: MaterialStatePropertyAll(
-                                      Color.fromARGB(172, 105, 240, 175))),
+                                padding: MaterialStatePropertyAll(
+                                    EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 10)),
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(172, 105, 240, 175)),
+                              ),
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 5),
+                                vertical: 20, horizontal: 0),
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Colors.transparent)),
+                              onPressed: () {
+                                if (is_choice_d_an_image) {
+                                  is_choice_d_an_image = false;
+                                  choice_d_text = "Enter Choice D ?";
+                                } else {
+                                  is_choice_d_an_image = true;
+                                }
+
+                                setState(() {
+                                  is_choice_d_an_image;
+                                  choice_d_text;
+                                });
+                              },
                               icon: const Icon(Icons.compare_arrows,
-                                  color: Colors.white, size: 20),
+                                  color: Colors.greenAccent, size: 35),
                               label: const Text(''),
                             ),
                           ),
                           Flexible(
                             child: Container(
                               width: 600,
-                              child: choice_widget_builder(
-                                  'Enter choice D', choice_d_controller),
+                              child: choice_widget_builder(choice_d_text,
+                                  choice_d_controller, is_choice_d_an_image),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       Container(
@@ -527,7 +737,7 @@ class _ImageBasedQuesionInsertingPageState
                                   width: 120,
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 25),
-                                  child: DropDownButtonWidget(),
+                                  child: const DropDownButtonWidget(),
                                 ),
                               ],
                             ),
@@ -547,13 +757,53 @@ class _ImageBasedQuesionInsertingPageState
                                   ),
                                 ),
                                 onPressed: () {
+                                  List absolutePathList = [
+                                    absolute_path_a,
+                                    absolute_path_b,
+                                    absolute_path_c,
+                                    absolute_path_d,
+                                    absolute_path_question
+                                  ];
+                                  List of_choices_made = [
+                                    is_choice_a_an_image,
+                                    is_choice_b_an_image,
+                                    is_choice_c_an_image,
+                                    is_choice_d_an_image,
+                                    is_question_an_image
+                                  ];
+                                  List of_text_of_choices = [
+                                    choice_a_controller,
+                                    choice_b_controller,
+                                    choice_c_controller,
+                                    choice_d_controller,
+                                    question_controller
+                                  ];
+
+                                  Map choice_a_save = {};
+                                  Map choice_b_save = {};
+                                  Map choice_c_save = {};
+                                  Map choice_d_save = {};
+                                  Map question_save = {};
+
+                                  List preparing_for_return = [];
+
+                                  for (int i = 0; i <= 4; i++) {
+                                    var data_of_fields = "";
+                                    var flag_code = 1;
+
+                                    if (of_choices_made[i]) {
+                                      flag_code = 2;
+                                      data_of_fields = absolutePathList[i];
+                                    } else {
+                                      data_of_fields =
+                                          of_text_of_choices[i].text;
+                                    }
+                                    preparing_for_return
+                                        .add({flag_code: data_of_fields});
+                                  }
+
                                   if (question_saver_to_db(
-                                      question_controller.text,
-                                      choice_a_controller.text,
-                                      choice_b_controller.text,
-                                      choice_c_controller.text,
-                                      choice_d_controller.text,
-                                      choice)) {
+                                      preparing_for_return, choice)) {
                                     question_controller.clear();
                                     choice_a_controller.clear();
                                     choice_b_controller.clear();
@@ -589,7 +839,6 @@ class DropDownButtonWidget extends StatefulWidget {
 }
 
 class _DropDownButtonState extends State<DropDownButtonWidget> {
-  String choice = 'A';
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
