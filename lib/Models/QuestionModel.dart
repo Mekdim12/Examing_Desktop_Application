@@ -17,9 +17,27 @@ class Question extends HiveObject {
 
   Question(
       this.exam_type, this.question, this.list_choice, this.correct_answer);
+
+  Question.fromJson(Map<String, dynamic> json) {
+    exam_type = json['Type'];
+    question = json['Question'];
+    list_choice = json['Choices'];
+    correct_answer = json['CorretAnswer'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Type'] = this.exam_type;
+    data['CorretAnswer'] = this.correct_answer;
+    data['Question'] = this.question;
+
+    data['Choices'] = this.list_choice;
+
+    // print(data);
+    return data;
+  }
 }
 
 class QuestionBox {
   static Box<Question> getAllTheQuestions() =>
-      Hive.box<Question>('QuestionInformatioModel');
+      Hive.box<Question>('QuestionInformatioModel_Trial');
 }
