@@ -122,16 +122,31 @@ class _ImageBasedQuesionInsertingPageState
     if (get_cwd_from_box != null) {
       Directory cwd = Directory('$get_cwd_from_box/CopiedFileAssets');
 
-      if (cwd.existsSync()) {
-        try {
-          imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
-          return {2: fullName};
-        } catch (Exception) {
-          return {};
+      cwd.exists().then((value) {
+        if (value) {
+          try {
+            imageFile
+                .copy('$get_cwd_from_box/CopiedFileAssets/$fullName')
+                .then((value) {
+              return {2: fullName};
+            });
+          } catch (Exception) {
+            return {};
+          }
+        } else {
+          cwd.create().then((value) {
+            try {
+              imageFile
+                  .copy('$get_cwd_from_box/CopiedFileAssets/$fullName')
+                  .then((value) {
+                return {2: fullName};
+              });
+            } catch (Exception) {
+              return {};
+            }
+          });
         }
-      } else {
-        cwd.create();
-      }
+      });
     }
 
     return {};
@@ -760,6 +775,7 @@ class _ImageBasedQuesionInsertingPageState
                                     absolute_path_d,
                                     absolute_path_question
                                   ];
+
                                   List of_choices_made = [
                                     is_choice_a_an_image,
                                     is_choice_b_an_image,

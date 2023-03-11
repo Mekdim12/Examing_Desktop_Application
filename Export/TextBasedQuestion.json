@@ -1,9 +1,0 @@
-{
-
-"1": {"Type": "1", "CorretAnswer": "A", "Question": "{1: second question here}", "Choices": [{"1": "second choice a"}, {"1": "second choice b"}, {"1": "second choice c"}, {"1": "second choice d"}]},
-"6": {"Type": "1", "CorretAnswer": "A", "Question": "{1: To make a Text widget scrollable vertically in Flutter, you can wrap it in a SingleChildScrollView widget and set the scrollDirection property to Axis. vertical . If you want to enable scrolling for a multi-line Text widget, you don't need to set the scrollDirection property, as it is set to Axis. vertical by default}", "Choices": [{"1": "To make a Text widget scrollable vertically in Flutter, you can wrap it in a SingleChildScrollView widget and set the scrollDirection"}, {"1": "To make a Text widget scrollab"}, {"1": "To make a Text"}, {"1": "None"}]},
-"12": {"Type": "1", "CorretAnswer": "B", "Question": "{1: asdf}", "Choices": [{"1": "ass"}, {"1": "asda"}, {"1": "ffda"}, {"1": "eaagd"}]},
-"13": {"Type": "1", "CorretAnswer": "C", "Question": "{1: rfwsrv}", "Choices": [{"1": "dfgdv"}, {"1": "bbb"}, {"1": "vcccccc"}, {"1": "ddddd"}]},
-"19": {"Type": "1", "CorretAnswer": "C", "Question": "{1: question}", "Choices": [{"1": "choicea "}, {"1": ""}, {"1": ""}, {"1": ""}]}
-
-}

@@ -300,20 +300,32 @@ class ExportingFiles {
     return writer.close();
   }
 
-  String stringNameExtracterFromTheMapAndCopier(
-      Map<int, String> item, String cwd) {
+  Future<String> stringNameExtracterFromTheMapAndCopier(
+      Map<int, String> item, String cwd) async {
     //{2:""}// get this value copy the file and return just string
     var key = item.keys.toList()[0];
     var value = item.values.toList()[0];
-
     try {
       File fromCopiedFileAsser = File('$cwd\\CopiedFileAssets\\$value');
-      fromCopiedFileAsser.copySync('$cwd\\Export\\Images\\$value');
-      return value;
-    } catch (Exception) {
-      print(">>>>>>>>>>>>>>>>>>>>>>.");
-      return '404';
+      await fromCopiedFileAsser
+          .copy('$cwd\\Export\\Images\\$value')
+          .then((value) {
+        return value;
+      });
+    } catch (FileSystemException) {
+      if (int.parse(FileSystemException.toString()
+              .substring(FileSystemException.toString().lastIndexOf("=") + 1,
+                  FileSystemException.toString().length - 1)
+              .trim()) ==
+          183) {
+        return await value;
+      }
+      print("*********************************");
+      print(FileSystemException);
+      return await '404';
     }
+
+    return await value;
   }
 
   Future<bool> checkerIfItemisImageOrNot(Map quesion, String cwd) async {
@@ -341,15 +353,16 @@ class ExportingFiles {
 
     checkerIfItemisImageOrNot(question, cwd).then((value) {
       if (value) {
-        var tempQuestionFinalHolder =
-            stringNameExtracterFromTheMapAndCopier(question, cwd);
-        if (tempQuestionFinalHolder == '404') {
-          any_failer = true;
-        } else {
-          questionFinalHolder = {
-            question.keys.toList()[0]: question.values.toList()[0]
-          };
-        }
+        stringNameExtracterFromTheMapAndCopier(question, cwd)
+            .then((tempQuestionFinalHolder) {
+          if (tempQuestionFinalHolder == '404') {
+            any_failer = true;
+          } else {
+            questionFinalHolder = {
+              question.keys.toList()[0]: question.values.toList()[0]
+            };
+          }
+        });
       } else {
         questionFinalHolder = {
           question.keys.toList()[0]: question.values.toList()[0]
@@ -360,15 +373,17 @@ class ExportingFiles {
         String currentChoiceValue = '';
         checkerIfItemisImageOrNot(element, cwd).then((value) {
           if (value) {
-            currentChoiceValue =
-                stringNameExtracterFromTheMapAndCopier(question, cwd);
-
-            if (currentChoiceValue == '404') {
-              any_failer = true;
-            } else {
-              choiceHolder.add(
-                  {element.keys.toList()[0].toString(): currentChoiceValue});
-            }
+            stringNameExtracterFromTheMapAndCopier(question, cwd)
+                .then((currentChoiceValue) {
+              print("******************************************");
+              print(currentChoiceValue);
+              if (currentChoiceValue == '404') {
+                any_failer = true;
+              } else {
+                choiceHolder.add(
+                    {element.keys.toList()[0].toString(): currentChoiceValue});
+              }
+            });
           } else {
             choiceHolder.add({
               element.keys.toList()[0].toString():
@@ -484,9 +499,7 @@ class ExportingFiles {
             } else {
               String tempHolder =
                   imageTypeQuestionTypeHandler(cwd, value).toString();
-              if (tempHolder
-                      .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
-                      .trim() !=
+              if (tempHolder.replaceAll(RegExp(r'(?:_|[^\w\s])+'), '').trim() !=
                   '') {
                 tempHolder = tempHolder
                     .replaceFirst('{', '', 0)
@@ -550,7 +563,7 @@ class ExportingFiles {
                         .then((value) {
                       _fileCreater(get_cwd_from_box, "ImageBasedQuestion")
                           .then((value) {
-                        dataCopyHandler(get_cwd_from_box);
+                        return dataCopyHandler(get_cwd_from_box);
                       });
                     });
                   });
