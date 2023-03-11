@@ -305,34 +305,32 @@ class ExportingFiles {
     //{2:""}// get this value copy the file and return just string
     var key = item.keys.toList()[0];
     var value = item.values.toList()[0];
+
     try {
-      File fromCopiedFileAsser =
-          File('$cwd\\CopiedFileAssets\\${item.values.toList()[0].toString()}');
-      fromCopiedFileAsser.copySync(
-          '$cwd\\Export\\Images\\${item.values.toList()[0].toString()}');
-      return item.values.toList()[0].toString();
+      File fromCopiedFileAsser = File('$cwd\\CopiedFileAssets\\$value');
+      fromCopiedFileAsser.copySync('$cwd\\Export\\Images\\$value');
+      return value;
     } catch (Exception) {
+      print(">>>>>>>>>>>>>>>>>>>>>>.");
       return '404';
     }
   }
 
-  bool checkerIfItemisImageOrNot(Map quesion, String cwd) {
+  Future<bool> checkerIfItemisImageOrNot(Map quesion, String cwd) async {
     if (quesion.keys.toList()[0].toString() == '2') {
       var imageName = quesion.values.toList()[0].toString();
 
       // a name from database so if there is name same as this in copied file asset then copy the file to export file folder
       File copiedFileAsset = File('$cwd\\CopiedFileAssets\\$imageName');
 
-      if (copiedFileAsset.existsSync()) {
-        return true;
-      }
+      return await copiedFileAsset.exists();
     }
 
     return false;
   }
 
-  Map<String, Map<String, Object>> imageTypeQuestionTypeHandler(
-      String cwd, Question questionObject) {
+  Future<Map<String, Map<String, Object>>> imageTypeQuestionTypeHandler(
+      String cwd, Question questionObject) async {
     Map<int, String> question = questionObject.question;
     var listOfChoice = questionObject.list_choice;
     bool any_failer = false;
@@ -341,72 +339,77 @@ class ExportingFiles {
 
     List choiceHolder = [];
 
-    if (checkerIfItemisImageOrNot(question, cwd)) {
-      var tempQuestionFinalHolder =
-          stringNameExtracterFromTheMapAndCopier(question, cwd);
-
-      if (tempQuestionFinalHolder == '404') {
-        any_failer = true;
+    checkerIfItemisImageOrNot(question, cwd).then((value) {
+      if (value) {
+        var tempQuestionFinalHolder =
+            stringNameExtracterFromTheMapAndCopier(question, cwd);
+        if (tempQuestionFinalHolder == '404') {
+          any_failer = true;
+        } else {
+          questionFinalHolder = {
+            question.keys.toList()[0]: question.values.toList()[0]
+          };
+        }
       } else {
         questionFinalHolder = {
           question.keys.toList()[0]: question.values.toList()[0]
         };
       }
-    } else {
-      questionFinalHolder = {
-        question.keys.toList()[0]: question.values.toList()[0]
-      };
-    }
 
-    listOfChoice.forEach((element) {
-      String currentChoiceValue = '';
-      if (checkerIfItemisImageOrNot(element, cwd)) {
-        currentChoiceValue =
-            stringNameExtracterFromTheMapAndCopier(question, cwd);
+      listOfChoice.forEach((element) {
+        String currentChoiceValue = '';
+        checkerIfItemisImageOrNot(element, cwd).then((value) {
+          if (value) {
+            currentChoiceValue =
+                stringNameExtracterFromTheMapAndCopier(question, cwd);
 
-        if (currentChoiceValue == '404') {
-          any_failer = true;
-        } else {
-          choiceHolder
-              .add({element.keys.toList()[0].toString(): currentChoiceValue});
-        }
-      } else {
-        choiceHolder.add({
-          element.keys.toList()[0].toString():
-              element.values.toList()[0].toString()
+            if (currentChoiceValue == '404') {
+              any_failer = true;
+            } else {
+              choiceHolder.add(
+                  {element.keys.toList()[0].toString(): currentChoiceValue});
+            }
+          } else {
+            choiceHolder.add({
+              element.keys.toList()[0].toString():
+                  element.values.toList()[0].toString()
+            });
+          }
+
+          if (!any_failer) {
+            var temp = {
+              '\"${questionObject.key.toString()}\"': {
+                '\"Type\"': '\"${questionObject.exam_type.toString()}\"',
+                '\"CorretAnswer\"':
+                    '\"${questionObject.correct_answer.toString()}\"',
+                '\"Question\"': '\"${questionFinalHolder}\"',
+                '\"Choices\"': [
+                  {
+                    '\"${choiceHolder[0].keys.toList()[0]}\"':
+                        '\"${choiceHolder[0][choiceHolder[0].keys.toList()[0]]}\"'
+                  },
+                  {
+                    '\"${choiceHolder[1].keys.toList()[0]}\"':
+                        '\"${choiceHolder[1][choiceHolder[1].keys.toList()[0]]}\"'
+                  },
+                  {
+                    '\"${choiceHolder[2].keys.toList()[0]}\"':
+                        '\"${choiceHolder[2][choiceHolder[2].keys.toList()[0]]}\"'
+                  },
+                  {
+                    '\"${choiceHolder[3].keys.toList()[0]}\"':
+                        '\"${choiceHolder[3][choiceHolder[3].keys.toList()[0]]}\"'
+                  },
+                ],
+              }
+            };
+
+            return temp;
+          }
         });
-      }
+      });
     });
 
-    if (!any_failer) {
-      var temp = {
-        '\"${questionObject.key.toString()}\"': {
-          '\"Type\"': '\"${questionObject.exam_type.toString()}\"',
-          '\"CorretAnswer\"': '\"${questionObject.correct_answer.toString()}\"',
-          '\"Question\"': '\"${questionFinalHolder}\"',
-          '\"Choices\"': [
-            {
-              '\"${choiceHolder[0].keys.toList()[0]}\"':
-                  '\"${choiceHolder[0][choiceHolder[0].keys.toList()[0]]}\"'
-            },
-            {
-              '\"${choiceHolder[1].keys.toList()[0]}\"':
-                  '\"${choiceHolder[1][choiceHolder[1].keys.toList()[0]]}\"'
-            },
-            {
-              '\"${choiceHolder[2].keys.toList()[0]}\"':
-                  '\"${choiceHolder[2][choiceHolder[2].keys.toList()[0]]}\"'
-            },
-            {
-              '\"${choiceHolder[3].keys.toList()[0]}\"':
-                  '\"${choiceHolder[3][choiceHolder[3].keys.toList()[0]]}\"'
-            },
-          ],
-        }
-      };
-
-      return temp;
-    }
     return {};
   }
 
@@ -433,8 +436,8 @@ class ExportingFiles {
           {
             '\"${questionObject.list_choice[3].keys.toList()[0]}\"':
                 '\"${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}\"'
-          },
-        ],
+          }
+        ]
       }
     };
 
@@ -468,19 +471,32 @@ class ExportingFiles {
           db.toMap().forEach((key, value) {
             if (value.exam_type == 1) {
               String tempHolder = textTypeQuestionHandler(value).toString();
-              tempHolder = tempHolder
-                  .replaceFirst('{', '', 0)
-                  .replaceFirst('}', ',\n', tempHolder.length - 2);
+              if (tempHolder
+                      .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
+                      .trim() !=
+                  '') {
+                tempHolder = tempHolder
+                    .replaceFirst('{', '', 0)
+                    .replaceFirst('}', ',\n', tempHolder.length - 2);
 
-              _textBasedQuestionHolder.add(tempHolder);
+                _textBasedQuestionHolder.add(tempHolder);
+              }
             } else {
               String tempHolder =
                   imageTypeQuestionTypeHandler(cwd, value).toString();
-              tempHolder = tempHolder
-                  .replaceFirst('{', '', 0)
-                  .replaceFirst('}', ',\n', tempHolder.length - 2);
+              if (tempHolder
+                      .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
+                      .trim() !=
+                  '') {
+                tempHolder = tempHolder
+                    .replaceFirst('{', '', 0)
+                    .replaceFirst('}', ',\n', tempHolder.length - 2)
+                    .replaceAll(',\n,', ',');
 
-              _imageBasedQuestinHolder.add(tempHolder);
+                // print(tempHolder);
+
+                _imageBasedQuestinHolder.add(tempHolder);
+              }
             }
           });
 

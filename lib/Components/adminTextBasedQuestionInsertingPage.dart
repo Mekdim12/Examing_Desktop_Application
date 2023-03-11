@@ -10,6 +10,8 @@ class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
       TextBasedQuestionInsertingPageState();
 }
 
+String choice = 'A';
+
 class TextBasedQuestionInsertingPageState
     extends State<TextBasedQuestionInsertingPageWidget> {
   Future openDialog(bool good_or_bad) => showDialog(
@@ -128,7 +130,7 @@ class TextBasedQuestionInsertingPageState
     'C',
     'D',
   ];
-  String choice = 'A';
+  // String choice = 'A';
 
   @override
   Widget build(BuildContext context) {
@@ -397,7 +399,6 @@ class DropDownButtonWidget extends StatefulWidget {
 }
 
 class _DropDownButtonState extends State<DropDownButtonWidget> {
-  String choice = 'A';
   @override
   Widget build(BuildContext context) {
     return DropdownButton(

@@ -2,13 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import './privillageChoosingPage.dart';
+import '../Models/QuestionModel.dart';
+import 'package:hive/hive.dart';
 
-Future<int> heavyBackgroundTask(int x) {
+Future<int> heavyBackgroundTask(int x) async {
   //  fetch if any data is its not in sync with the current database
   // and load it to the database  [ hive ]
   //  for now just add some delay and proceed to the next page
+  
 
-  return Future(() => 1);
+  return 1;
 }
 
 class splashScreen extends StatelessWidget {
@@ -23,7 +26,6 @@ class splashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     Future<bool> flag = compute_methodCallerSimpleFunction();
     // print(flag.asStream().elementAt(1));
     flag.then((value) => {

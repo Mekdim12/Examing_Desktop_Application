@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './sideBarDrawer.dart';
 import './adminTypeOfQuestionChossingPage.dart';
+import './adminManageQuestions.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -172,7 +173,14 @@ class _QuestionManagementLandingPageState
                           padding: MaterialStateProperty.all(
                               const EdgeInsets.symmetric(
                                   horizontal: 100, vertical: 25))),
-                      onPressed: (is_CWD_file_located) ? () {} : null,
+                      onPressed: (is_CWD_file_located)
+                          ? () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (ctx) {
+                                return QuestionManagementPageWidget();
+                              }));
+                            }
+                          : null,
                     ),
                   ),
                   Container(

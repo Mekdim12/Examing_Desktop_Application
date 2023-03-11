@@ -223,8 +223,6 @@ class _ImageBasedQuesionInsertingPageState
             borderSide: const BorderSide(
                 width: 2, color: Color.fromARGB(188, 105, 240, 175)),
             borderRadius: BorderRadius.circular(10)),
-        // icon: const Icon(Icons.question_answer),
-        // iconColor: const Color.fromARGB(255, 213, 207, 214),
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.greenAccent),
       ),

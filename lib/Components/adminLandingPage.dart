@@ -27,7 +27,7 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       child: Scaffold(
-        drawer: SidebarDrawerWidget(1),
+        drawer: const SidebarDrawerWidget(1),
         appBar: AppBar(
           foregroundColor: const Color(0xFFF5EBE0).withOpacity(1),
           backgroundColor: const Color(0xFF65647C),
