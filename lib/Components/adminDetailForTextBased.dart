@@ -34,6 +34,8 @@ class _DetailAdminWidgetState extends State<DetailAdminWidget> {
 
     Box<Question> db = QuestionBox.getAllTheQuestions();
     Question currentQuestion = db.get(keyIndex)!;
+
+    
     
     int choice = (currentQuestion.correct_answer == 'A')
         ? 1

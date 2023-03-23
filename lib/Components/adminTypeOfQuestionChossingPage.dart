@@ -418,7 +418,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
                 '\"Type\"': '\"${questionObject.exam_type.toString()}\"',
                 '\"CorretAnswer\"':
                     '\"${questionObject.correct_answer.toString()}\"',
-                '\"Question\"': '\"${questionFinalHolder}\"',
+                '\"Question\"': '{\"${questionFinalHolder.keys.first}\" : \"${questionFinalHolder.values.first} \"}',
                 '\"Choices\"': [
                   {
                     '\"${choiceHolder[0].keys.toList()[0]}\"':
@@ -452,7 +452,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
       '\"${questionObject.key.toString()}\"': {
         '\"Type\"': '\"${questionObject.exam_type.toString()}\"',
         '\"CorretAnswer\"': '\"${questionObject.correct_answer.toString()}\"',
-        '\"Question\"': '\"${questionObject.question}\"',
+        '\"Question\"': '{\"${questionObject.question.keys.first}\" : \"${questionObject.question.values.first} \"}',
         '\"Choices\"': [
           {
             '\"${questionObject.list_choice[0].keys.toList()[0]}\"':
@@ -531,7 +531,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
                       .replaceFirst('{', '', 0)
                       .replaceFirst('}', ',\n', tempHolder.length - 2)
                       .replaceAll(',\n,', ',');
-                      print(tempHolder);
+                    
                   _imageBasedQuestinHolder.add(tempHolder);
                 }
 

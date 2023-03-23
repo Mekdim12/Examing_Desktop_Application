@@ -32,12 +32,12 @@ class Question extends HiveObject {
 
     data['Choices'] = this.list_choice;
 
-    // print(data);
+    
     return data;
   }
 }
 
 class QuestionBox {
   static Box<Question> getAllTheQuestions() =>
-      Hive.box<Question>('QuestionInformatioModel_Trial4');
+      Hive.box<Question>('QuestionInformatioModel');
 }

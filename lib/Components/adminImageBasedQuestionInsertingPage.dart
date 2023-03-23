@@ -115,22 +115,28 @@ class _ImageBasedQuesionInsertingPageState
         .replaceAll('(', '')
         .replaceAll(')', ''));
 
-   
+
     String filename =
         "${imageFile.uri.pathSegments.last.split('.')[0]}$randomNumberGenerated";
     String filextension = imageFile.uri.pathSegments.last.split('.')[1];
 
     String fullName = "$filename.$filextension";
+   
+   if (fullName.contains(' ')){
+      return {};
+   }
+    fullName = fullName.replaceAll(' ', '');
     
     String get_cwd_from_box = Hive.box('CurrenWorkingDirectory').get('cwd');
 
     if (get_cwd_from_box != null) {
-      Directory cwd = Directory('$get_cwd_from_box/CopiedFileAssets');
-    bool  value = await cwd.exists() ;
+      Directory cwd = Directory('$get_cwd_from_box\\CopiedFileAssets');
+      bool  value = await cwd.exists() ;
 
     if (value){
         try {
-            await imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
+        
+            await imageFile.copy('$get_cwd_from_box\\CopiedFileAssets\\$fullName');
             value_to_returned =  {2: fullName};
           } catch (Exception) {
             return {};
@@ -139,10 +145,10 @@ class _ImageBasedQuesionInsertingPageState
          await cwd.create();
          try{
           
-          await imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
+          await imageFile.copy('$get_cwd_from_box\\CopiedFileAssets\\$fullName');
           value_to_returned =  {2: fullName};
 
-         }catch(Exception){
+         }catch(Exception ){
           return {};
          }
     }
@@ -154,14 +160,18 @@ class _ImageBasedQuesionInsertingPageState
 
   Future<bool> question_saver_to_db(List questionAndAns_data, String correctAnswer) async{
     List temp_choice_holder = [];
-    Map temp_question = new Map<int, String>();
+    Map temp_question = {};
 
     try {
       for (int index = 0; index < questionAndAns_data.length; index++) {
         if (index == 4) {
           // the text question text or data
+           
           if (questionAndAns_data[index].containsKey(2)) {
-                 temp_question = await item_to_put_into_db_formmater(questionAndAns_data[index]);          
+               
+                  
+                 temp_question = await item_to_put_into_db_formmater(questionAndAns_data[index]); 
+                       
           } else {
             temp_question = questionAndAns_data[index];
           }
@@ -169,7 +179,14 @@ class _ImageBasedQuesionInsertingPageState
           
           if (questionAndAns_data[index].containsKey(2)) {
             // its image
-            temp_choice_holder.add (await item_to_put_into_db_formmater(questionAndAns_data[index]) );
+                Map<int, String> value_returned = await item_to_put_into_db_formmater(questionAndAns_data[index]);
+                if(value_returned.keys.isNotEmpty){
+                    temp_choice_holder.add (value_returned);
+                }else{
+                  openDialog(false);
+                  return false;
+                }
+            
 
           } else {
             temp_choice_holder.add(questionAndAns_data[index]);
@@ -178,6 +195,7 @@ class _ImageBasedQuesionInsertingPageState
       }
     } catch (Exception) {
       openDialog(false);
+      return false;
     }
 
 
@@ -191,6 +209,9 @@ class _ImageBasedQuesionInsertingPageState
       correctAnswer,
     );
 
+    // print(question_object.question);
+    // print(question_object.list_choice);
+    // print(question_object.correct_answer);
     try {
       final db = QuestionBox.getAllTheQuestions();
       
