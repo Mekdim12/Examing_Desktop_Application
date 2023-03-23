@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:is_first_run/is_first_run.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,10 +14,24 @@ Future<void> main() async {
   Hive.registerAdapter(QuestionAdapter());
 
   // creating Question Information Box For Holding All The Questions
-  await Hive.openBox<Question>('QuestionInformatioModel');
+  await Hive.openBox<Question>('QuestionInformatioMainModel');
   await Hive.openBox('CurrenWorkingDirectory');
 
-// Hive.box<Question>('QuestionInformatioModel_Trial6').deleteFromDisk();
+  
+  bool firstRun = await IsFirstRun.isFirstRun();
+
+  if (firstRun){
+     await  Hive.box<Question>('QuestionInformatioMainModel').deleteFromDisk();
+     await  Hive.box<Question>('CurrenWorkingDirectory').deleteFromDisk();
+  }
+
+
+  await Hive.openBox<Question>('QuestionInformatioMainModel');
+  await Hive.openBox('CurrenWorkingDirectory');
+
+
+
+
 
 
   runApp(MyMainHompePage());

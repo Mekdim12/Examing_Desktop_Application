@@ -206,8 +206,28 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
     int currentState = widget.flag;
 
     List<Question> value = listOfItemsDataBaseFetcher(currentState);
-    
-    return ValueListenableBuilder(
+   
+    if(value.length <=  0){
+      return Center(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 150),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "No Items Found In The Database",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontFamily: 'quickSand',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+    }else{
+      if(value.isNotEmpty){
+        if(value[0].question.isNotEmpty){
+
+                  return ValueListenableBuilder(
+      
         valueListenable: QuestionBox.getAllTheQuestions().listenable(),
         
         builder: (context, box, child) {
@@ -369,5 +389,43 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                   ),
                 );
         });
+  
+        }else{
+          return Center(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 150),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "No Items Found In The Database",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontFamily: 'quickSand',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+        }
+      }else{
+        return Center(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 150),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "No Items Found In The Database",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontFamily: 'quickSand',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+      }
+    }
+    
+    
+  
+  
   }
 }

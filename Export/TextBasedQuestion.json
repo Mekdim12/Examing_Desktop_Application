@@ -1,6 +1,0 @@
-{
-
-"0": {"Type": "1", "CorretAnswer": "B", "Question": "{1: First question}", "Choices": [{"1": "choice a"}, {"1": "choice b"}, {"1": "choice c"}, {"1": "choice d"}]},
-"2": {"Type": "1", "CorretAnswer": "C", "Question": "{1: second question}", "Choices": [{"1": "choice a"}, {"1": "choice b"}, {"1": "choice correct answert"}, {"1": "choice d"}]}
-
-}
