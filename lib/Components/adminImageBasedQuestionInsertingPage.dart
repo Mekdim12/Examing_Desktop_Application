@@ -104,7 +104,10 @@ class _ImageBasedQuesionInsertingPageState
             ],
           ));
 
-  Map<int, String> item_to_put_into_db_formmater(questionAndAns_data) {
+   Future<Map<int,String>>  item_to_put_into_db_formmater(questionAndAns_data) async{
+    Map<int,String> value_to_returned = {};
+
+    
     int randomNumberGenerated = Random().nextInt(1000000000);
 
     File imageFile = File(questionAndAns_data.values
@@ -112,47 +115,44 @@ class _ImageBasedQuesionInsertingPageState
         .replaceAll('(', '')
         .replaceAll(')', ''));
 
+   
     String filename =
         "${imageFile.uri.pathSegments.last.split('.')[0]}$randomNumberGenerated";
     String filextension = imageFile.uri.pathSegments.last.split('.')[1];
 
     String fullName = "$filename.$filextension";
+    
     String get_cwd_from_box = Hive.box('CurrenWorkingDirectory').get('cwd');
 
     if (get_cwd_from_box != null) {
       Directory cwd = Directory('$get_cwd_from_box/CopiedFileAssets');
+    bool  value = await cwd.exists() ;
 
-      cwd.exists().then((value) {
-        if (value) {
-          try {
-            imageFile
-                .copy('$get_cwd_from_box/CopiedFileAssets/$fullName')
-                .then((value) {
-              return {2: fullName};
-            });
+    if (value){
+        try {
+            await imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
+            value_to_returned =  {2: fullName};
           } catch (Exception) {
             return {};
           }
-        } else {
-          cwd.create().then((value) {
-            try {
-              imageFile
-                  .copy('$get_cwd_from_box/CopiedFileAssets/$fullName')
-                  .then((value) {
-                return {2: fullName};
-              });
-            } catch (Exception) {
-              return {};
-            }
-          });
-        }
-      });
+    }else{
+         await cwd.create();
+         try{
+          
+          await imageFile.copy('$get_cwd_from_box/CopiedFileAssets/$fullName');
+          value_to_returned =  {2: fullName};
+
+         }catch(Exception){
+          return {};
+         }
+    }
     }
 
-    return {};
+
+    return  value_to_returned;
   }
 
-  bool question_saver_to_db(List questionAndAns_data, String correctAnswer) {
+  Future<bool> question_saver_to_db(List questionAndAns_data, String correctAnswer) async{
     List temp_choice_holder = [];
     Map temp_question = new Map<int, String>();
 
@@ -161,16 +161,16 @@ class _ImageBasedQuesionInsertingPageState
         if (index == 4) {
           // the text question text or data
           if (questionAndAns_data[index].containsKey(2)) {
-            temp_question =
-                item_to_put_into_db_formmater(questionAndAns_data[index]);
+                 temp_question = await item_to_put_into_db_formmater(questionAndAns_data[index]);          
           } else {
             temp_question = questionAndAns_data[index];
           }
         } else {
+          
           if (questionAndAns_data[index].containsKey(2)) {
             // its image
-            temp_choice_holder
-                .add(item_to_put_into_db_formmater(questionAndAns_data[index]));
+            temp_choice_holder.add (await item_to_put_into_db_formmater(questionAndAns_data[index]) );
+
           } else {
             temp_choice_holder.add(questionAndAns_data[index]);
           }
@@ -180,6 +180,8 @@ class _ImageBasedQuesionInsertingPageState
       openDialog(false);
     }
 
+
+    
     Question question_object = Question(
       // 1 : implies that the text containe an text based question or answer[choice]
       // 2 : implies that the image containe an image based question or answer[choice]
@@ -191,13 +193,14 @@ class _ImageBasedQuesionInsertingPageState
 
     try {
       final db = QuestionBox.getAllTheQuestions();
-
+      
       Future<int> obj = db.add(question_object);
-
+     
       // calling up the diaglog if successfull
 
       obj.then((value) {
         openDialog(true);
+
         setState(() {
           is_question_an_image = false;
           question_text = "Enter The Question Here ?";
@@ -767,7 +770,7 @@ class _ImageBasedQuesionInsertingPageState
                                         horizontal: 50, vertical: 20),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async{
                                   List absolutePathList = [
                                     absolute_path_a,
                                     absolute_path_b,
@@ -814,7 +817,7 @@ class _ImageBasedQuesionInsertingPageState
                                         .add({flag_code: data_of_fields});
                                   }
 
-                                  if (question_saver_to_db(
+                                  if ( await question_saver_to_db(
                                       preparing_for_return, choice)) {
                                     question_controller.clear();
                                     choice_a_controller.clear();

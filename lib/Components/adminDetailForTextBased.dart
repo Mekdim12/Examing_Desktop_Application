@@ -22,6 +22,8 @@ class _DetailAdminWidgetState extends State<DetailAdminWidget> {
   Widget build(BuildContext context) {
     int keyIndex = widget.keyOfQuestionFromdatabase;
     int flag = widget.flag;
+
+    
     Hive.box('CurrenWorkingDirectory');
     if (Hive.box('CurrenWorkingDirectory').get('cwd') != null) {
       is_CWD_file_located = true;
@@ -32,7 +34,7 @@ class _DetailAdminWidgetState extends State<DetailAdminWidget> {
 
     Box<Question> db = QuestionBox.getAllTheQuestions();
     Question currentQuestion = db.get(keyIndex)!;
-
+    
     int choice = (currentQuestion.correct_answer == 'A')
         ? 1
         : (currentQuestion.correct_answer == 'B')

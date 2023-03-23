@@ -39,5 +39,5 @@ class Question extends HiveObject {
 
 class QuestionBox {
   static Box<Question> getAllTheQuestions() =>
-      Hive.box<Question>('QuestionInformatioModel_Trial2');
+      Hive.box<Question>('QuestionInformatioModel_Trial4');
 }

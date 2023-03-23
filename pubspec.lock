@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  async_foreach:
+    dependency: "direct main"
+    description:
+      name: async_foreach
+      sha256: b9d3680f852cb24088e37b7e563ffa0c5075b747a5c58afb0b612f683ca1d2cb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5+4"
   boolean_selector:
     dependency: transitive
     description:

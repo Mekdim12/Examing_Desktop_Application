@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:async_foreach/async_foreach.dart';
 import 'package:diving_licence_traning_center_student/Models/QuestionModel.dart';
 import 'package:flutter/material.dart';
 import './adminQuestionManagementMenuPage.dart';
@@ -279,6 +279,8 @@ class ExportingFiles {
     File jsonWriter = File('$cwd\\Export\\$filename.json');
     IOSink writer = jsonWriter.openWrite(mode: FileMode.append);
 
+   
+
     late List currentList;
     if (flag == 1) {
       //
@@ -287,6 +289,8 @@ class ExportingFiles {
       //
       currentList = _imageBasedQuestinHolder;
     }
+
+
 
     var last_Object = currentList.removeLast();
     last_Object = last_Object
@@ -300,49 +304,58 @@ class ExportingFiles {
     return writer.close();
   }
 
-  Future<String> stringNameExtracterFromTheMapAndCopier(
-      Map<int, String> item, String cwd) async {
-    //{2:""}// get this value copy the file and return just string
+  Future<String> stringNameExtracterFromTheMapAndCopier(Map<int, String> item, String cwd) async{
+   
     var key = item.keys.toList()[0];
     var value = item.values.toList()[0];
+    
+   
+
+   
+    String for_ret = '';
     try {
       File fromCopiedFileAsser = File('$cwd\\CopiedFileAssets\\$value');
-      await fromCopiedFileAsser
-          .copy('$cwd\\Export\\Images\\$value')
-          .then((value) {
-        return value;
-      });
+      var val = await fromCopiedFileAsser.copy('$cwd\\Export\\Images\\$value');
+      for_ret = value;
+      
+      
     } catch (FileSystemException) {
       if (int.parse(FileSystemException.toString()
               .substring(FileSystemException.toString().lastIndexOf("=") + 1,
                   FileSystemException.toString().length - 1)
               .trim()) ==
           183) {
-        return await value;
+        for_ret =  value;
+      }else{
+        for_ret = '404';
       }
-      print("*********************************");
-      print(FileSystemException);
-      return await '404';
+     
     }
 
-    return await value;
+    return for_ret;
   }
 
   Future<bool> checkerIfItemisImageOrNot(Map quesion, String cwd) async {
+    bool result = false;
     if (quesion.keys.toList()[0].toString() == '2') {
       var imageName = quesion.values.toList()[0].toString();
 
       // a name from database so if there is name same as this in copied file asset then copy the file to export file folder
       File copiedFileAsset = File('$cwd\\CopiedFileAssets\\$imageName');
 
-      return await copiedFileAsset.exists();
+      result =  await copiedFileAsset.exists();
     }
 
-    return false;
+   return result;
   }
 
-  Future<Map<String, Map<String, Object>>> imageTypeQuestionTypeHandler(
-      String cwd, Question questionObject) async {
+
+
+
+
+Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject) async {
+  
+
     Map<int, String> question = questionObject.question;
     var listOfChoice = questionObject.list_choice;
     bool any_failer = false;
@@ -350,49 +363,57 @@ class ExportingFiles {
     late Map questionFinalHolder;
 
     List choiceHolder = [];
+    var ret_temp;
 
-    checkerIfItemisImageOrNot(question, cwd).then((value) {
-      if (value) {
-        stringNameExtracterFromTheMapAndCopier(question, cwd)
-            .then((tempQuestionFinalHolder) {
-          if (tempQuestionFinalHolder == '404') {
-            any_failer = true;
-          } else {
-            questionFinalHolder = {
-              question.keys.toList()[0]: question.values.toList()[0]
-            };
-          }
-        });
+    // handling if question is image or not not the choices
+    var value =  await checkerIfItemisImageOrNot(question, cwd);
+
+    
+    if (value) {
+        
+       var tempQuestionFinalHolder =  stringNameExtracterFromTheMapAndCopier(question, cwd);
+      if (tempQuestionFinalHolder == '404') {
+        any_failer = true;
       } else {
         questionFinalHolder = {
           question.keys.toList()[0]: question.values.toList()[0]
         };
       }
+   
+    } else {
+      questionFinalHolder = {
+        question.keys.toList()[0]: question.values.toList()[0]
+      };
+    }
+  
 
-      listOfChoice.forEach((element) {
-        String currentChoiceValue = '';
-        checkerIfItemisImageOrNot(element, cwd).then((value) {
+    await listOfChoice.asyncForEach((element) async{
+    
+      var value = await checkerIfItemisImageOrNot(element, cwd);
+    
           if (value) {
-            stringNameExtracterFromTheMapAndCopier(question, cwd)
-                .then((currentChoiceValue) {
-              print("******************************************");
-              print(currentChoiceValue);
-              if (currentChoiceValue == '404') {
-                any_failer = true;
-              } else {
-                choiceHolder.add(
-                    {element.keys.toList()[0].toString(): currentChoiceValue});
-              }
-            });
+
+            var currentChoiceValue =  await stringNameExtracterFromTheMapAndCopier(element, cwd);
+          
+            if (currentChoiceValue == '404') {
+              any_failer = true;
+            } else {
+              choiceHolder.add(
+                  {element.keys.toList()[0].toString(): currentChoiceValue});
+            }
+           
           } else {
             choiceHolder.add({
               element.keys.toList()[0].toString():
                   element.values.toList()[0].toString()
-            });
+            }); 
           }
+          
+      });
 
-          if (!any_failer) {
-            var temp = {
+     
+        if (!any_failer) {
+              ret_temp =  {
               '\"${questionObject.key.toString()}\"': {
                 '\"Type\"': '\"${questionObject.exam_type.toString()}\"',
                 '\"CorretAnswer\"':
@@ -418,14 +439,11 @@ class ExportingFiles {
                 ],
               }
             };
+           
+    }
 
-            return temp;
-          }
-        });
-      });
-    });
-
-    return {};
+    // print(ret_temp);
+    return ret_temp;
   }
 
   Map<String, Map<String, Object>> textTypeQuestionHandler(
@@ -475,59 +493,65 @@ class ExportingFiles {
     return ioSink.close();
   }
 
-  bool dataCopyHandler(String cwd) {
-    //  read the boxes dataa
-    // prepare json format dictiornary and put both of them
+  Future<bool> dataCopyHandler(String cwd) async{
+   
     final db = QuestionBox.getAllTheQuestions();
-
+    
+    bool flag = false;
     if (db.isNotEmpty && db.isOpen) {
-      jsonLastAndBraceAdder(cwd, 0, 'TextBasedQuestion').then((value) {
-        jsonLastAndBraceAdder(cwd, 0, 'ImageBasedQuestion').then((value) {
-          db.toMap().forEach((key, value) {
-            if (value.exam_type == 1) {
-              String tempHolder = textTypeQuestionHandler(value).toString();
-              if (tempHolder
-                      .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
-                      .trim() !=
-                  '') {
-                tempHolder = tempHolder
-                    .replaceFirst('{', '', 0)
-                    .replaceFirst('}', ',\n', tempHolder.length - 2);
+      await  jsonLastAndBraceAdder(cwd, 0, 'TextBasedQuestion');
+      await jsonLastAndBraceAdder(cwd, 0, 'ImageBasedQuestion');
 
-                _textBasedQuestionHolder.add(tempHolder);
-              }
-            } else {
-              String tempHolder =
-                  imageTypeQuestionTypeHandler(cwd, value).toString();
-              if (tempHolder.replaceAll(RegExp(r'(?:_|[^\w\s])+'), '').trim() !=
-                  '') {
-                tempHolder = tempHolder
-                    .replaceFirst('{', '', 0)
-                    .replaceFirst('}', ',\n', tempHolder.length - 2)
-                    .replaceAll(',\n,', ',');
+        for(var value in db.toMap().values){
+              if(value.exam_type == 1){
+            
+                  String tempHolder =  textTypeQuestionHandler(value).toString();
+                  
+                  if (tempHolder
+                          .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
+                          .trim() !=
+                      '') {
+                    tempHolder = tempHolder
+                        .replaceFirst('{', '', 0)
+                        .replaceFirst('}', ',\n', tempHolder.length - 2);
+                     _textBasedQuestionHolder.add(tempHolder);
+                  }
+                  
+            }else{
+                 
+                var tempHolder =
+                  await imageTypeQuestionTypeHandler(cwd, value);
 
-                // print(tempHolder);
+                tempHolder = tempHolder.toString();
+                
 
-                _imageBasedQuestinHolder.add(tempHolder);
-              }
+                if (tempHolder.replaceAll(RegExp(r'(?:_|[^\w\s])+'), '').trim() !=
+                    '') {
+                  tempHolder = tempHolder
+                      .replaceFirst('{', '', 0)
+                      .replaceFirst('}', ',\n', tempHolder.length - 2)
+                      .replaceAll(',\n,', ',');
+                      print(tempHolder);
+                  _imageBasedQuestinHolder.add(tempHolder);
+                }
+
+
             }
-          });
+           
+        }
+        
+        
+        
+        await fileWriter(cwd, 'TextBasedQuestion', 1);
+        await  fileWriter(cwd, 'ImageBasedQuestion', 2);
+        await jsonLastAndBraceAdder(cwd, -1, 'TextBasedQuestion');
+        await   jsonLastAndBraceAdder(cwd, -1, 'ImageBasedQuestion');
 
-          fileWriter(cwd, 'TextBasedQuestion', 1).then((value) {
-            fileWriter(cwd, 'ImageBasedQuestion', 2).then((value) {
-              jsonLastAndBraceAdder(cwd, -1, 'TextBasedQuestion').then((value) {
-                jsonLastAndBraceAdder(cwd, -1, 'ImageBasedQuestion')
-                    .then((value) {
-                  return true;
-                });
-              });
-            });
-          });
-        });
-      });
+        flag = true;
+      
     }
 
-    return false;
+    return flag;
   }
 
   Future<File> _fileCreater(String cwd, String fileName) {
@@ -544,7 +568,11 @@ class ExportingFiles {
   }
 
   Future<bool> startExporting() async {
+
+
     var get_cwd_from_box = Hive.box('CurrenWorkingDirectory').get('cwd');
+
+
     if (get_cwd_from_box != null) {
       Directory cwd = Directory('$get_cwd_from_box\\Export');
       Directory cwd_image = Directory('$get_cwd_from_box\\Export\\Images');
@@ -552,43 +580,56 @@ class ExportingFiles {
       Future<Directory> futureHolderForImagesFolder;
 
       bool messing_with_promise = false;
-      if (cwd.existsSync()) {
-        if (cwd_image.existsSync()) {
-          _folderDeleter(cwd_image).then((value) {
-            _folderDeleter(cwd).then((value) {
-              try {
-                _folderCreater(cwd).then((value) {
-                  _folderCreater(cwd_image).then((value) {
-                    _fileCreater(get_cwd_from_box, "TextBasedQuestion")
-                        .then((value) {
-                      _fileCreater(get_cwd_from_box, "ImageBasedQuestion")
-                          .then((value) {
-                        return dataCopyHandler(get_cwd_from_box);
-                      });
-                    });
-                  });
-                });
-              } catch (Exception) {
-                return false;
-              }
-            });
-          });
+
+      if (await cwd.exists()) {
+        if (await cwd_image.exists()) {
+          await _folderDeleter(cwd_image);
+          await _folderDeleter(cwd);
+
+          try{
+                await _folderCreater(cwd);
+                await _folderCreater(cwd_image);
+                await  _fileCreater(get_cwd_from_box, "TextBasedQuestion");
+                await _fileCreater(get_cwd_from_box, "ImageBasedQuestion");
+
+                return dataCopyHandler(get_cwd_from_box);
+
+
+          }catch(Exception ){
+            return false;
+          }
+             
+        
         }
       } else {
-        try {
-          _folderCreater(cwd).then((value) {
-            _folderCreater(cwd_image).then((value) {
-              _fileCreater(get_cwd_from_box, "TextBasedQuestion").then((value) {
-                _fileCreater(get_cwd_from_box, "ImageBasedQuestion")
-                    .then((value) {
-                  return dataCopyHandler(get_cwd_from_box);
-                });
-              });
-            });
-          });
-        } catch (Exception) {
-          return false;
-        }
+
+        
+          try{
+                await _folderCreater(cwd);
+                await _folderCreater(cwd_image);
+                await  _fileCreater(get_cwd_from_box, "TextBasedQuestion");
+                await _fileCreater(get_cwd_from_box, "ImageBasedQuestion");
+                return dataCopyHandler(get_cwd_from_box);
+
+          }catch(Exception ){
+            return false;
+          }
+
+
+        // try {
+        //   _folderCreater(cwd).then((value) {
+        //     _folderCreater(cwd_image).then((value) {
+        //       _fileCreater(get_cwd_from_box, "TextBasedQuestion").then((value) {
+        //         _fileCreater(get_cwd_from_box, "ImageBasedQuestion")
+        //             .then((value) {
+        //           return dataCopyHandler(get_cwd_from_box);
+        //         });
+        //       });
+        //     });
+        //   });
+        // } catch (Exception) {
+        //   return false;
+        // }
       }
     }
 
