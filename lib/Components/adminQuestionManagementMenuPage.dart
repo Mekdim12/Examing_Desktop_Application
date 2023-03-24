@@ -226,43 +226,72 @@ class _QuestionManagementLandingPageState
                                       var folder_for_file = await FilePicker
                                           .platform
                                           .getDirectoryPath();
-                                      try {
-                                        var CWD =
-                                            Hive.box('CurrenWorkingDirectory');
+                                        if(folder_for_file != null){
+                                             try {
+                                                  var CWD =
+                                                      Hive.box('CurrenWorkingDirectory');
 
-                                        Future<void> fulture_cwd =
-                                            CWD.put('cwd', folder_for_file);
-                                        fulture_cwd.then(
-                                          (value) {
-                                            openDialog(true, 0);
-                                            setState(() {
-                                              is_CWD_file_located = true;
-                                            });
-                                          },
-                                        );
-                                      } catch (Exception) {
-                                        openDialog(false, 0);
-                                      }
+                                                  Future<void> fulture_cwd =
+                                                      CWD.put('cwd', folder_for_file);
+                                                  fulture_cwd.then(
+                                                    (value) {
+                                                      openDialog(true, 0);
+                                                      setState(() {
+                                                        is_CWD_file_located = true;
+                                                      });
+                                                    },
+                                                  );
+                                            } catch (Exception) {
+                                              var CWD = Hive.box('CurrenWorkingDirectory');
+                                              await CWD.put('cwd', null);
+                                               openDialog(false, 0);
+                                                setState(() {
+                                                        is_CWD_file_located = false;
+                                                  });
+                                            }
+                                        }else{
+                                          var CWD = Hive.box('CurrenWorkingDirectory');
+                                          await CWD.put('cwd', null);
+                                          openDialog(false, 0);
+                                          setState(() {
+                                                    is_CWD_file_located = false;
+                                              });
+                                        }
+                                     
                                     },
-                              onLongPress: (is_CWD_file_located)
-                                  ? () async {
+                              onLongPress:() async {
                                       var folder_for_file = await FilePicker
                                           .platform
                                           .getDirectoryPath();
-                                      try {
-                                        var CWD =
-                                            Hive.box('CurrenWorkingDirectory');
-                                        Future<void> fulture_cwd =
-                                            CWD.put('cwd', folder_for_file);
-                                        openDialog(true, 0);
-                                        setState(() {
-                                          is_CWD_file_located = true;
-                                        });
-                                      } catch (Exception) {
-                                        openDialog(false, 0);
-                                      }
-                                    }
-                                  : null,
+                                          if(folder_for_file != null){
+                                                try {
+                                                  var CWD =
+                                                      Hive.box('CurrenWorkingDirectory');
+                                                  await CWD.put('cwd', folder_for_file);
+                                                  
+                                                  setState(() {
+                                                    is_CWD_file_located = true;
+                                                  });
+
+                                                  openDialog(true, 0);
+                                                } catch (Exception) {
+                                                    var CWD = Hive.box('CurrenWorkingDirectory');
+                                                    await CWD.put('cwd', null);
+                                                    openDialog(false, 0);
+                                                    setState(() {
+                                                            is_CWD_file_located = false;
+                                                      });
+                                                }
+                                          }else{
+                                            var CWD = Hive.box('CurrenWorkingDirectory');
+                                            await CWD.put('cwd', null);
+                                            openDialog(false, 0);
+                                            setState(() {
+                                                    is_CWD_file_located = false;
+                                              });
+                                          }
+                                    },
+                                 
                               icon: const Icon(Icons.upload),
                               label: const Text('Locate Installation Folder'),
                             )
