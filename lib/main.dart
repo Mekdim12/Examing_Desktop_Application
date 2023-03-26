@@ -9,6 +9,7 @@ import './Models/QuestionModel.dart';
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
+  
   await Hive.initFlutter();
   Hive.registerAdapter(QuestionAdapter());
 
@@ -35,7 +36,7 @@ Future<void> main() async {
 
   }
 
-
+ 
   runApp(MyMainHompePage());
 }
 

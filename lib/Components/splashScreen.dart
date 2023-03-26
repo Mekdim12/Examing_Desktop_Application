@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -5,29 +7,76 @@ import './privillageChoosingPage.dart';
 import '../Models/QuestionModel.dart';
 import 'package:hive/hive.dart';
 
-Future<int> heavyBackgroundTask(int x) async {
-  //  fetch if any data is its not in sync with the current database
-  // and load it to the database  [ hive ]
-  //  for now just add some delay and proceed to the next page
-  
+import 'package:hive_flutter/hive_flutter.dart';
 
-  return 1;
+
+
+
+void heavyBackgroundTask(List infns )  async{
+
+  
+    // check for the export folder inside the cwd
+    // if exists read everything inside image and text format in hive 
+    // while reading image copy image into copied image file assets
+    // when this done delete export folder
+
+    Directory exported_file_path = Directory('${infns[0]}\\Export');
+    List questionsList = infns[1];
+    
+   
+     
+  
 }
 
 class splashScreen extends StatelessWidget {
-  const splashScreen({super.key});
+   const splashScreen({Key? key}) : super(key: key);
+  
 
-  Future<bool> compute_methodCallerSimpleFunction() async {
-    await compute(heavyBackgroundTask, 1);
+  Future<bool> compute_methodCallerSimpleFunction(List values) async {
 
-    await Future.delayed(Duration(seconds: 2));
+    String CWD = values[0];
+
+    if (CWD != null) {
+
+      Directory exportPath = Directory('$CWD\\Export');
+     List<Map<String, Object>> questionList = values[1];
+
+      
+      if(await exportPath.exists()){
+         await compute(heavyBackgroundTask, [CWD, questionList]);
+      } 
+
+    }
+
+    await Future.delayed(Duration(seconds: 4));
     return true;
   }
 
+  List  prepareDataForProcess(){
+     Box<Question> db = QuestionBox.getAllTheQuestions();
+     List<Map<String, Object>> temporaryQuestionHolder = [];
+     String CWD = Hive.box('CurrenWorkingDirectory').get('cwd') ;
+      
+      db.toMap().forEach((key, value) {
+
+          temporaryQuestionHolder.add( {
+              'QuestionType': value.exam_type,
+              'Question':value.question,
+              'List':value.list_choice,
+              'answer':value.correct_answer
+          });
+      });
+    
+    return [CWD, temporaryQuestionHolder, db];
+  }
+
   @override
-  Widget build(BuildContext context) {
-    Future<bool> flag = compute_methodCallerSimpleFunction();
-    // print(flag.asStream().elementAt(1));
+  Widget build(BuildContext context)  {
+    
+    bool is_CWD_file_located = false;
+
+    Future<bool> flag = compute_methodCallerSimpleFunction( prepareDataForProcess());
+
     flag.then((value) => {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (ctx) {

@@ -18,6 +18,8 @@ migrate_working_dir/
 *.png
 *.jpg
 .env
+Export
+installer
 
 
 
