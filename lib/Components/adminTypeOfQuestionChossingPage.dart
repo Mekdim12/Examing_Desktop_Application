@@ -80,7 +80,7 @@ class _QuestionTypeChoosingPageState extends State<QuestionTypeChoosingPage> {
                         style: TextStyle(
                           color: Colors.black,
                         ),
-                      ))
+                      )),
                 ],
               ));
 
@@ -259,8 +259,8 @@ class _QuestionTypeChoosingPageState extends State<QuestionTypeChoosingPage> {
 // first check if already exported data is there then if there is one delete it
 // then create appropriate path
 // Export--Images--images.jpeg
-//       --textbase.json
-//       --imagebase.json
+//       --textbase.txt
+//       --imagebase.txt
 
 // if successfull create these structure --- Done Till this step
 
@@ -278,7 +278,7 @@ class ExportingFiles {
   Future<dynamic> fileWriter(String cwd, String filename, int flag) async {
 
     
-    File jsonWriter = File('$cwd\\Export\\$filename.json');
+    File jsonWriter = File('$cwd\\Export\\$filename.txt');
     IOSink writer = jsonWriter.openWrite(mode: FileMode.append);
 
    
@@ -294,12 +294,12 @@ class ExportingFiles {
 
 
 
-    var last_Object = currentList.removeLast();
-    last_Object = last_Object
-        .toString()
-        .replaceFirst(',', '', last_Object.toString().length - 2);
+    // var last_Object = currentList.removeLast();
+    // last_Object = last_Object
+    //     .toString()
+    //     .replaceFirst(',', '', last_Object.toString().length - 2);
 
-    currentList.insert(currentList.length, last_Object);
+    // currentList.insert(currentList.length, last_Object);
     writer.writeAll(currentList);
 
     await writer.flush();
@@ -340,6 +340,7 @@ class ExportingFiles {
   Future<bool> checkerIfItemisImageOrNot(Map quesion, String cwd) async {
     bool result = false;
     if (quesion.keys.toList()[0].toString() == '2') {
+      
       var imageName = quesion.values.toList()[0].toString();
 
       // a name from database so if there is name same as this in copied file asset then copy the file to export file folder
@@ -445,10 +446,13 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
     }
 
     // print(ret_temp);
-    return ret_temp;
+    var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏<-#%~ \n";
+     
+    return temp2;
   }
 
-  Map<String, Map<String, Object>> textTypeQuestionHandler(
+  String textTypeQuestionHandler(
+
       Question questionObject) {
     var temp = {
       '\"${questionObject.key.toString()}\"': {
@@ -475,13 +479,13 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
         ]
       }
     };
-
-    return temp;
+      var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏<-#%~ \n";
+      return temp2;
   }
 
   Future<dynamic> jsonLastAndBraceAdder(
       String cwd, int pos, String fileName) async {
-    File file = File('$cwd\\Export\\$fileName.json');
+    File file = File('$cwd\\Export\\$fileName.txt');
 
     var ioSink = file.openWrite(mode: FileMode.append);
 
@@ -509,15 +513,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
             
                   String tempHolder =  textTypeQuestionHandler(value).toString();
                   
-                  if (tempHolder
-                          .replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '')
-                          .trim() !=
-                      '') {
-                    tempHolder = tempHolder
-                        .replaceFirst('{', '', 0)
-                        .replaceFirst('}', ',\n', tempHolder.length - 2);
-                     _textBasedQuestionHolder.add(tempHolder);
-                  }
+                  _textBasedQuestionHolder.add(tempHolder);
                   
             }else{
                  
@@ -525,17 +521,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
                   await imageTypeQuestionTypeHandler(cwd, value);
 
                 tempHolder = tempHolder.toString();
-                
-
-                if (tempHolder.replaceAll(RegExp(r'(?:_|[^\w\s])+'), '').trim() !=
-                    '') {
-                  tempHolder = tempHolder
-                      .replaceFirst('{', '', 0)
-                      .replaceFirst('}', ',\n', tempHolder.length - 2)
-                      .replaceAll(',\n,', ',');
-                    
-                  _imageBasedQuestinHolder.add(tempHolder);
-                }
+                _imageBasedQuestinHolder.add(tempHolder);
 
 
             }
@@ -557,7 +543,7 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
   }
 
   Future<File> _fileCreater(String cwd, String fileName) {
-    File file = File('$cwd\\Export\\$fileName.json');
+    File file = File('$cwd\\Export\\$fileName.txt');
     return file.create();
   }
 

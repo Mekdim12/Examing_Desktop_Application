@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -346,10 +347,32 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                                                 135, 255, 255, 255),
                                       ),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async{
+                                      String cwd = Hive.box('CurrenWorkingDirectory').get('cwd').toString();
+
+                                    if(value[index].exam_type != 1){
+                                      if(value[index].question.keys.first != 1){
+                                            File file_to_delete = File('${cwd}\\CopiedFileAssets\\${value[index].question.values.first}');
+                                            if(await file_to_delete.exists()){
+                                                  await file_to_delete.delete();
+                                            }
+                                      }
+
+                                      for(var choice in value[index].list_choice){
+                                          if(choice.keys.first != 1){
+                                            File file_to_delete = File('${cwd}\\CopiedFileAssets\\${choice.values.first}');
+                                            
+                                            if(await file_to_delete.exists()){
+                                                await file_to_delete.delete();
+                                            }
+                                          }
+                                      }
+                                    }
                                       QuestionBox.getAllTheQuestions()
                                           .delete(value[index].key)
                                           .then((value) {
+
+                                       
                                         SnackBarBuilderAndDisplay(
                                             context, index);
                                       });
