@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import './sideBarDrawer.dart';
-
+import '../Models/QuestionModel.dart';
 class AdminLandingPageWidget extends StatefulWidget {
   const AdminLandingPageWidget({super.key});
 
@@ -199,10 +199,10 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
                           ),
                           Container(
                               margin: const EdgeInsets.symmetric(vertical: 15)),
-                          const Text(
-                            "15654",
+                           Text(
+                            QuestionBox.getAllTheQuestions().toMap().length.toString(),
                             selectionColor: Color.fromARGB(255, 188, 243, 209),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 letterSpacing: 5,
                                 fontFamilyFallback: ['OpenSans'],
                                 wordSpacing: 545,

@@ -224,7 +224,9 @@ class splashScreen extends StatelessWidget {
  
   Future<bool> compute_methodCallerSimpleFunction(List values) async {
     
-    
+    if (values.toList().length  <= 0){
+      return true;
+    }
     String CWD = values[0];
 
     if (CWD != null) {
@@ -259,10 +261,12 @@ class splashScreen extends StatelessWidget {
   List  prepareDataForProcess(){
      Box<Question> db = QuestionBox.getAllTheQuestions();
      List<Map<String, Object>> temporaryQuestionHolder = [];
-
-     String CWD = Hive.box('CurrenWorkingDirectory').get('cwd') ;
+  try{
+    String CWD = Hive.box('CurrenWorkingDirectory').get('cwd') ;
+          
       
-      db.toMap().forEach((key, value) {
+
+     db.toMap().forEach((key, value) {
           temporaryQuestionHolder.add( {
               'QuestionType': value.exam_type,
               'Question':value.question,
@@ -275,6 +279,9 @@ class splashScreen extends StatelessWidget {
 
     
     return [CWD, temporaryQuestionHolder,db];
+      }catch(Exception){
+        return [];
+      }
   }
 
   @override
@@ -282,7 +289,8 @@ class splashScreen extends StatelessWidget {
     
     bool is_CWD_file_located = false;
 
-    Future<bool> flag = compute_methodCallerSimpleFunction( prepareDataForProcess());
+    // print(prepareDataForProcess());
+    Future<bool> flag = compute_methodCallerSimpleFunction(prepareDataForProcess());
 
     flag.then((value) => {
           Navigator.of(context).pushReplacement(
