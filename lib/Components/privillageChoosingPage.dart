@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './Admin_login_page.dart';
+import '../StudentComponents/studentLoginPage.dart';
 
 class PrivillageChossingPage extends StatelessWidget {
   const PrivillageChossingPage({super.key});
@@ -87,7 +88,13 @@ class PrivillageChossingPage extends StatelessWidget {
                   backgroundColor: MaterialStateProperty.all(Colors.green),
                   padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
                       horizontal: 70, vertical: 25))),
-              onPressed: () {},
+              onPressed: () {
+                 Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) {
+                    return StudentLoginPageWidget();
+                  }),
+                  );
+              },
             ),
           ),
         ],
