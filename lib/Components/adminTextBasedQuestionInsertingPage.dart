@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './adminTypeOfQuestionChossingPage.dart';
 import '../Models/QuestionModel.dart';
-
+import '../Models/QuestionTypeModel.dart';
 class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
   const TextBasedQuestionInsertingPageWidget({super.key});
 
@@ -11,7 +11,7 @@ class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
 }
 
 String choice = 'A';
-
+String type_choice = '1';
 class TextBasedQuestionInsertingPageState
     extends State<TextBasedQuestionInsertingPageWidget> {
   Future openDialog(bool good_or_bad) => showDialog(
@@ -76,7 +76,9 @@ class TextBasedQuestionInsertingPageState
           ));
 
   bool question_saver_to_db(String question, String choice_a, String choice_b,
-      String choice_c, String choice_d, String correctAnswer) {
+      String choice_c, String choice_d, String correctAnswer, String question_type) {
+
+       
     final question_object = Question(
         // 1 : implies that the text containe an text based question or answer[choice]
         1,
@@ -89,11 +91,21 @@ class TextBasedQuestionInsertingPageState
         ],
         correctAnswer);
 
+
+
     try {
       final db = QuestionBox.getAllTheQuestions();
       Future<int> obj = db.add(question_object);
       // calling up the diaglog if successfull
-      obj.then((value) => openDialog(true));
+      obj.then((value){
+        QuestionTypeModel question_type_object = QuestionTypeModel({value.toString(): type_choice.toString()});
+        final db2 = QuestionTypeBox.getAllTheQuestionsTypes();
+        Future<int> resp = db2.add(question_type_object);
+        resp.then((value){
+            openDialog(true);
+        });
+        
+      });
       return true;
     } catch (Exception) {
       openDialog(false);
@@ -308,13 +320,57 @@ class TextBasedQuestionInsertingPageState
                           )
                         ],
                       ),
+                      
+
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 25),
+                                  child: const Text(
+                                    'Select Type of question:',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Color.fromARGB(169, 255, 255, 255)),
+                                  ),
+                                ),
+                               
+                                Container(
+                                  margin:const EdgeInsets.symmetric(vertical: 25),
+                                  child: Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(15),
+                                                border: Border.all(color: Colors.greenAccent)),
+                                            alignment: Alignment.center,
+                                            width: 290,
+                                            margin: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: QuestionTypeChosserDropDownWidget(),
+                                    ),
+                                  ),
+                             
+                              ],
+                            ),
+                             ],
+                        ),
+                      ),
+                          
+
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 25),
                         width: double.infinity,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
+                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
@@ -328,6 +384,7 @@ class TextBasedQuestionInsertingPageState
                                             Color.fromARGB(169, 255, 255, 255)),
                                   ),
                                 ),
+                               
                                 Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
@@ -339,6 +396,7 @@ class TextBasedQuestionInsertingPageState
                                       horizontal: 25),
                                   child: DropDownButtonWidget(),
                                 ),
+                             
                               ],
                             ),
                             Container(
@@ -357,13 +415,16 @@ class TextBasedQuestionInsertingPageState
                                   ),
                                 ),
                                 onPressed: () {
+                                  // print(choice);
+                                  // print(type_choice);
                                   if (question_saver_to_db(
                                       question_controller.text,
                                       choice_a_controller.text,
                                       choice_b_controller.text,
                                       choice_c_controller.text,
                                       choice_d_controller.text,
-                                      choice)) {
+                                      choice,
+                                      type_choice)) {
                                     question_controller.clear();
                                     choice_a_controller.clear();
                                     choice_b_controller.clear();
@@ -379,6 +440,7 @@ class TextBasedQuestionInsertingPageState
                           ],
                         ),
                       ),
+                    
                     ],
                   ),
                 )
@@ -406,8 +468,8 @@ class _DropDownButtonState extends State<DropDownButtonWidget> {
       isExpanded: true,
       iconEnabledColor: Colors.green,
       iconSize: 30,
-      icon: Icon(Icons.menu_book),
-      value: choice,
+      icon: const Icon(Icons.menu_book),
+      value: choice.isEmpty? null: choice,
       onChanged: (val) {
         setState(() {
           choice = val!;
@@ -455,3 +517,146 @@ class _DropDownButtonState extends State<DropDownButtonWidget> {
     );
   }
 }
+
+
+
+class QuestionTypeChosserDropDownWidget  extends StatefulWidget {
+  const QuestionTypeChosserDropDownWidget ({super.key});
+
+  @override
+  State<QuestionTypeChosserDropDownWidget > createState() => _QuestionTypeChosserDropDownState();
+}
+
+class _QuestionTypeChosserDropDownState  extends State<QuestionTypeChosserDropDownWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+      
+      // dropdownColor:const Color.fromARGB(170, 105, 240, 175),
+      isExpanded: true,
+      iconEnabledColor: Colors.green,
+      iconSize: 30,
+      icon: const Icon(Icons.menu_book),
+      value: type_choice.isEmpty? null: type_choice,
+      onChanged: (val) {
+        setState(() {
+          type_choice = val!;
+        });
+      },
+
+      items: const [
+         
+      DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '1',
+          child: Text(
+            'ሞተርሳይክል',
+            textAlign: TextAlign.center,
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        
+
+       DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '2',
+          child: Text(
+            'አዉቶሞቢል',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '3',
+          child: Text(
+            'ታክሲ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '4',
+          child: Text(
+            'ታክሲ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '5',
+          child: Text(
+            'ደረቅ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '6',
+          child: Text(
+            'ደረቅ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '7',
+          child: Text(
+            'ደረቅ 3',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '8',
+          child: Text(
+            'ህዝብ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '9',
+          child: Text(
+            'ህዝብ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+
+
+      ],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+ሞተርሳይክል
+አዉቶሞቢል
+ታክሲ 2
+ታክሲ 1
+ደረቅ 1
+ደረቅ 2 
+ደረቅ 3
+ህዝብ 1
+ህዝብ 2
+
+ */

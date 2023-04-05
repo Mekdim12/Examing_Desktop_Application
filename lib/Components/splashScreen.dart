@@ -8,14 +8,14 @@ import './privillageChoosingPage.dart';
 import '../Models/QuestionModel.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
+import '../Models/QuestionTypeModel.dart';
 
 
 Future<List> heavyBackgroundTask(List infns )  async{
 
-    
   
-   
+   List? TextbasedFinalHolder = [];
+   List? ImageFinalHolder = [];
     // check for the export folder inside the cwd
     // if exists read everything inside image and text format in hive 
     // while reading image copy image into copied image file assets
@@ -30,6 +30,8 @@ Future<List> heavyBackgroundTask(List infns )  async{
     List? image_based_question = [];
     List<Question>? text_based_qustions_resolved = [];
     List<Question>? image_based_qustions_resolved = [];
+    List<QuestionTypeModel>? type_of_question_resolved = [];
+
 
     questionsList.forEach((element) {
 
@@ -58,12 +60,13 @@ Future<List> heavyBackgroundTask(List infns )  async{
             if(file_content.toString().trim().endsWith('}') ){
                 file_content =  file_content.toString().trim().replaceRange(file_content.toString().trim().length -1, file_content.toString().trim().length,"");
             }
-
+            
             // first seprate the question with <-#%~  so that u can get the individual question
             List available_questions = file_content.split('<-#%~');
             available_questions.asMap().forEach((key, value) {
                 if(value.toString().trim().isNotEmpty){
                     List  question_items = value.toString().split("#%->")[1].split('…');
+
                     
                     int question_id= int.parse( question_items[0].toString().split('⳾->')[1].split('<-⳾')[0].toString().trim());
                     
@@ -79,6 +82,9 @@ Future<List> heavyBackgroundTask(List infns )  async{
                         choices.add({int.parse(element.toString().split(':')[0].toString().trim()) : element.toString().split(':')[1].toString().trim()});
                     });
 
+                    String questionType_on_options = question_items[4].toString().split('᥄->')[1].split('<-᥄')[0].toString().trim();
+                    
+                     
                     // now u have all the all information mapped sucessfully so check if the questions is already inside the database
                     bool flag = false;
                     text_based_questions.forEach((element) {
@@ -95,19 +101,20 @@ Future<List> heavyBackgroundTask(List infns )  async{
                         }
                     });
 
-
                     if(! flag){
                      text_based_qustions_resolved.add(Question(1, {questionType:questionValue}, choices, correct_answer));
+                 
+                     TextbasedFinalHolder.add([Question(1, {questionType:questionValue}, choices, correct_answer), questionType_on_options]);
                     }
 
-
-                  
                 }
             });
         }
            
     }
 
+	
+	
 
     
     
@@ -142,10 +149,14 @@ Future<List> heavyBackgroundTask(List infns )  async{
                     String questionValue = question.split(':')[1].toString().trim();
 
                     List<Map<int,String>> choices = [];
+
                     List choice_splitted = question_items[3].toString().split('꘏->')[1].split('<-꘏')[0].toString().split('¶');
+
                     choice_splitted.forEach((element) { 
                         choices.add({int.parse(element.toString().split(':')[0].toString().trim()) : element.toString().split(':')[1].toString().trim()});
                     });
+
+                    String questionType_on_options = question_items[4].toString().split('᥄->')[1].split('<-᥄')[0].toString().trim();
 
                     // now u have all the all information mapped sucessfully so check if the questions is already inside the database
                     bool flag = false;
@@ -166,7 +177,9 @@ Future<List> heavyBackgroundTask(List infns )  async{
 
 
                     if(! flag){
-                     image_based_qustions_resolved.add(Question(2, {questionType:questionValue}, choices, correct_answer));
+                      
+                        ImageFinalHolder.add([Question(2, {questionType:questionValue}, choices, correct_answer), questionType_on_options]);
+                        image_based_qustions_resolved.add(Question(2, {questionType:questionValue}, choices, correct_answer));
                     }
   
                   
@@ -174,6 +187,7 @@ Future<List> heavyBackgroundTask(List infns )  async{
             });
         }
     }
+    
     
    
     // now u can handle copying the image before setting to the database the text and save it to hive
@@ -203,17 +217,21 @@ Future<List> heavyBackgroundTask(List infns )  async{
                   }
               }else{
                  throw Exception;
+                 
               }
             }
           }
           
           image_based_qustions_resolved_.add(element);
-        }catch(Exception){}
+        }catch(Exception){
+          return [];
+        }
       }
 
-      
+    
     //   now loop throught those lists resolved on and write it on hive db so returning will be ideal since u can't perform hive operation here
-     return [text_based_qustions_resolved,image_based_qustions_resolved_];
+    
+     return [TextbasedFinalHolder, ImageFinalHolder];
 
   
 }
@@ -237,18 +255,55 @@ class splashScreen extends StatelessWidget {
       
       if(await exportPath.exists()){
         try{
-
+        
             List resolvedListOfQuestionData =  await compute(heavyBackgroundTask, [CWD, questionList]);
-            List<Question> textBasedQuestionData = resolvedListOfQuestionData[0];
-            List<Question> imageBasedQuestionData = resolvedListOfQuestionData[1];
 
-            Box<Question> db = QuestionBox.getAllTheQuestions();
-            await db.addAll(textBasedQuestionData);
-            await db.addAll(imageBasedQuestionData);
+                if(resolvedListOfQuestionData.length > 0){
+
+                  if(resolvedListOfQuestionData[0] != null &&  resolvedListOfQuestionData[0].length > 0){
+                      
+                          List? textBasedQuestionData = resolvedListOfQuestionData[0];
+                          
+                          Box<Question> db = QuestionBox.getAllTheQuestions();
+                          Box<QuestionTypeModel> db2 = QuestionTypeBox.getAllTheQuestionsTypes();
+                      
+                      for(var data in resolvedListOfQuestionData[0]){
+                        int keyQuestionObjectStoredIn = await db.add(data[0]);
+                        await db2.add(QuestionTypeModel({keyQuestionObjectStoredIn.toString(): data[1]}));
+                      }
+
+					  if(resolvedListOfQuestionData[1] != null &&  resolvedListOfQuestionData[1].length > 0){
+                      List? imageBasedQuestionData = resolvedListOfQuestionData[1];
+					  Box<Question> db = QuestionBox.getAllTheQuestions();
+                      Box<QuestionTypeModel> db2 = QuestionTypeBox.getAllTheQuestionsTypes();
+
+					  for(var data in resolvedListOfQuestionData[1]){
+                        int keyQuestionObjectStoredIn = await db.add(data[0]);
+                        await db2.add(QuestionTypeModel({keyQuestionObjectStoredIn.toString(): data[1]}));
+                      }
+                
+					}
+         
+                    }
+
+					// if all goes right , there is no points keeping these file so delete export folder
+					await exportPath.delete(recursive: true);
+
+
+                  
+            }
             
-             // if all goes right , there is no points keeping these file so delete export folder
-             await exportPath.delete(recursive: true);
 
+
+            // List? textBasedQuestionData = resolvedListOfQuestionData[0];
+            
+
+           
+
+            // Box<Question> db = QuestionBox.getAllTheQuestions();
+            // await db.addAll(textBasedQuestionData);
+            // await db.addAll(imageBasedQuestionData);
+         
         }catch(Exception ){}
        
       } 

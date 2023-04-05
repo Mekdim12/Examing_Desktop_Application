@@ -8,6 +8,7 @@ import './adminTextBasedQuestionInsertingPage.dart';
 import './adminImageBasedQuestionInsertingPage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../Models/QuestionTypeModel.dart';
 
 class QuestionTypeChoosingPage extends StatefulWidget {
   const QuestionTypeChoosingPage({super.key});
@@ -445,9 +446,17 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
            
     }
 
-    // print(ret_temp);
-    var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏<-#%~ \n";
-     
+    var question_type = null;
+    final db = QuestionTypeBox.getAllTheQuestionsTypes();
+  
+    db.toMap().forEach((key, value) {
+          if(value.question_type_items.keys.toList()[0].toString() == questionObject.key.toString()){
+              question_type = value.question_type_items.values.toList()[0].toString();
+          }
+      });  
+    
+    var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏…᥄->${question_type}<-᥄<-#%~ \n";
+    
     return temp2;
   }
 
@@ -479,7 +488,15 @@ Future<dynamic> imageTypeQuestionTypeHandler(String cwd, Question questionObject
         ]
       }
     };
-      var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏<-#%~ \n";
+    var question_type = null;
+      final db = QuestionTypeBox.getAllTheQuestionsTypes();
+      db.toMap().forEach((key, value) {
+          if(value.question_type_items.keys.toList()[0].toString() == questionObject.key.toString()){
+              question_type = value.question_type_items.values.toList()[0].toString();
+          }
+      });
+     
+      var temp2= "#%-> ⳾->${questionObject.key.toString()}<-⳾…꛴->${questionObject.correct_answer.toString()}<-꛴…¿->${questionObject.question.keys.first} : ${questionObject.question.values.first}<-¿…꘏->${questionObject.list_choice[0].keys.toList()[0]}:${questionObject.list_choice[0][questionObject.list_choice[0].keys.toList()[0]]}¶ ${questionObject.list_choice[1].keys.toList()[0]}:${questionObject.list_choice[1][questionObject.list_choice[1].keys.toList()[0]]}¶${questionObject.list_choice[2].keys.toList()[0]}:${questionObject.list_choice[2][questionObject.list_choice[2].keys.toList()[0]]}¶${questionObject.list_choice[3].keys.toList()[0]}:${questionObject.list_choice[3][questionObject.list_choice[3].keys.toList()[0]]}<-꘏…᥄->${question_type}<-᥄<-#%~ \n";
       return temp2;
   }
 

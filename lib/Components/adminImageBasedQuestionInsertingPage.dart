@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import './adminTypeOfQuestionChossingPage.dart';
 import '../Models/QuestionModel.dart';
+import  '../Models/QuestionTypeModel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:math';
 import 'package:hive/hive.dart';
@@ -18,7 +19,7 @@ class ImageBasedQuesionInsertingPageWidget extends StatefulWidget {
 }
 
 String choice = 'A';
-
+String type_choice = '1';
 class _ImageBasedQuesionInsertingPageState
     extends State<ImageBasedQuesionInsertingPageWidget> {
   final question_controller = TextEditingController();
@@ -158,7 +159,7 @@ class _ImageBasedQuesionInsertingPageState
     return  value_to_returned;
   }
 
-  Future<bool> question_saver_to_db(List questionAndAns_data, String correctAnswer) async{
+  Future<bool> question_saver_to_db(List questionAndAns_data, String correctAnswer,String type_choice) async{
     List temp_choice_holder = [];
     Map temp_question = {};
 
@@ -209,9 +210,8 @@ class _ImageBasedQuesionInsertingPageState
       correctAnswer,
     );
 
-    // print(question_object.question);
-    // print(question_object.list_choice);
-    // print(question_object.correct_answer);
+
+   
     try {
       final db = QuestionBox.getAllTheQuestions();
       
@@ -220,7 +220,11 @@ class _ImageBasedQuesionInsertingPageState
       // calling up the diaglog if successfull
 
       obj.then((value) {
-        openDialog(true);
+        QuestionTypeModel question_type_object = QuestionTypeModel({value.toString(): type_choice.toString()});
+        final db2 = QuestionTypeBox.getAllTheQuestionsTypes();
+        Future<int> resp = db2.add(question_type_object);
+        resp.then((value) {
+           openDialog(true);
 
         setState(() {
           is_question_an_image = false;
@@ -238,9 +242,13 @@ class _ImageBasedQuesionInsertingPageState
           is_choice_d_an_image = false;
           choice_d_text = 'Enter choice D';
           absolute_path_d = "";
-        });
+          
+          
+            });
+        },);
+         return true;
       });
-      return true;
+    
     } catch (Exception) {
       openDialog(false);
     }
@@ -461,7 +469,7 @@ class _ImageBasedQuesionInsertingPageState
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 80, left: 25, right: 25),
+                  margin: const EdgeInsets.only(top: 50, left: 25, right: 25),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -743,6 +751,50 @@ class _ImageBasedQuesionInsertingPageState
                           ),
                         ],
                       ),
+
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 25),
+                                  child: const Text(
+                                    'Select Type of question:',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Color.fromARGB(169, 255, 255, 255)),
+                                  ),
+                                ),
+                               
+                                Container(
+                                  margin:const EdgeInsets.symmetric(vertical: 15),
+                                  child: Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(15),
+                                                border: Border.all(color: Colors.greenAccent)),
+                                            alignment: Alignment.center,
+                                            width: 290,
+                                            margin: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: QuestionTypeChosserDropDownWidget(),
+                                    ),
+                                  ),
+                             
+                              ],
+                            ),
+                             ],
+                        ),
+                      ),
+
+
+
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 25),
                         width: double.infinity,
@@ -838,8 +890,10 @@ class _ImageBasedQuesionInsertingPageState
                                         .add({flag_code: data_of_fields});
                                   }
 
+
+                                  
                                   if ( await question_saver_to_db(
-                                      preparing_for_return, choice)) {
+                                      preparing_for_return, choice, type_choice )) {
                                     question_controller.clear();
                                     choice_a_controller.clear();
                                     choice_b_controller.clear();
@@ -883,7 +937,7 @@ class _DropDownButtonState extends State<DropDownButtonWidget> {
       iconEnabledColor: Colors.green,
       iconSize: 30,
       icon: Icon(Icons.menu_book),
-      value: choice,
+       value: choice.isEmpty? null: choice,
       onChanged: (val) {
         setState(() {
           choice = val!;
@@ -931,3 +985,146 @@ class _DropDownButtonState extends State<DropDownButtonWidget> {
     );
   }
 }
+
+
+
+class QuestionTypeChosserDropDownWidget  extends StatefulWidget {
+  const QuestionTypeChosserDropDownWidget ({super.key});
+
+  @override
+  State<QuestionTypeChosserDropDownWidget > createState() => _QuestionTypeChosserDropDownState();
+}
+
+class _QuestionTypeChosserDropDownState  extends State<QuestionTypeChosserDropDownWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+      
+      // dropdownColor:const Color.fromARGB(170, 105, 240, 175),
+      isExpanded: true,
+      iconEnabledColor: Colors.green,
+      iconSize: 30,
+      icon: const Icon(Icons.menu_book),
+      value: type_choice.isEmpty? null: type_choice,
+      onChanged: (val) {
+        setState(() {
+          type_choice = val!;
+        });
+      },
+
+      items: const [
+         
+      DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '1',
+          child: Text(
+            'ሞተርሳይክል',
+            textAlign: TextAlign.center,
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        
+
+       DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '2',
+          child: Text(
+            'አዉቶሞቢል',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '3',
+          child: Text(
+            'ታክሲ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '4',
+          child: Text(
+            'ታክሲ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '5',
+          child: Text(
+            'ደረቅ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '6',
+          child: Text(
+            'ደረቅ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '7',
+          child: Text(
+            'ደረቅ 3',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '8',
+          child: Text(
+            'ህዝብ 1',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+        DropdownMenuItem(
+          alignment: Alignment.center,
+          value: '9',
+          child: Text(
+            'ህዝብ 2',
+            style:
+                TextStyle(fontFamily: 'quickSand', fontWeight: FontWeight.bold),
+          ),
+        ),
+
+
+      ],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+ሞተርሳይክል
+አዉቶሞቢል
+ታክሲ 2
+ታክሲ 1
+ደረቅ 1
+ደረቅ 2 
+ደረቅ 3
+ህዝብ 1
+ህዝብ 2
+
+ */

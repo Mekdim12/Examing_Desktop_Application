@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import './adminQuestionManagementMenuPage.dart';
 import '../Models/QuestionModel.dart';
+import '../Models/QuestionTypeModel.dart';
 import 'package:hive/hive.dart';
 
 import './adminDetailForTextBased.dart';
@@ -18,6 +19,7 @@ class QuestionManagementPageWidget extends StatefulWidget {
 }
 
 class _QuestionManagementPageState extends State<QuestionManagementPageWidget> {
+ 
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -164,7 +166,28 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
   bool isContainerHovered = false;
   bool isDeleteButtonPressed = false;
   int indexOfHovered = 0;
-
+  List type_of_question = ['ሞተርሳይክል',
+                          'አዉቶሞቢል',
+                          'ታክሲ 2',
+                          'ታክሲ 1',
+                          'ደረቅ 1',
+                          'ደረቅ 2', 
+                          'ደረቅ 3',
+                          'ህዝብ 1',
+                          'ህዝብ 2'
+                          ];
+  String typeIdentifier(String currentQuestionkey){
+   
+    Box<QuestionTypeModel> dbs = QuestionTypeBox.getAllTheQuestionsTypes();
+    dbs.toMap().forEach((key, value) {
+        if (value.question_type_items.keys.toList()[0].toString() == currentQuestionkey){
+              currentQuestionkey = type_of_question[int.parse(value.question_type_items.values.toList()[0].toString())].toString();
+        }
+    });
+    return currentQuestionkey;
+    
+  }
+ 
   void SnackBarBuilderAndDisplay(BuildContext context, int index) {
     final snackBar = SnackBar(
       content: Container(
@@ -207,7 +230,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
     int currentState = widget.flag;
 
     List<Question> value = listOfItemsDataBaseFetcher(currentState);
-   
+    
     if(value.length <=  0){
       return Center(
                   child: Container(
@@ -289,6 +312,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                                     child: Text(
                                       maxLines: 2,
                                       softWrap: true,
+                                      
                                       value[index]
                                           .question
                                           .values.toList()[0].toString()
@@ -317,8 +341,8 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                                           Text(
                                             textAlign: TextAlign.start,
                                             (currentState == 1)
-                                                ? "Text Based"
-                                                : "Image Based",
+                                                ? typeIdentifier(value[index].key.toString())
+                                                : typeIdentifier(value[index].key.toString()),
                                             style: const TextStyle(
                                                 decoration:
                                                     TextDecoration.underline,
@@ -368,14 +392,26 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                                           }
                                       }
                                     }
-                                      QuestionBox.getAllTheQuestions()
-                                          .delete(value[index].key)
-                                          .then((value) {
 
-                                       
-                                        SnackBarBuilderAndDisplay(
-                                            context, index);
-                                      });
+                                  Future.delayed(Duration(milliseconds: 100));
+                                  
+                                  Box<QuestionTypeModel> db = QuestionTypeBox.getAllTheQuestionsTypes();
+                                  //   get the index the item
+                                  int keyofQuestionType = -1100000;
+                                  db.toMap().forEach((key, value_) { 
+                                    if(value_.question_type_items.keys.toList()[0].toString()  == value[index].key.toString()){
+                                      keyofQuestionType = key;   
+                                    }
+                                  });
+
+                                  await db.delete(keyofQuestionType);
+
+                                  Future.delayed(Duration(milliseconds: 100));
+                                  
+                                  await QuestionBox.getAllTheQuestions().delete(value[index].key);
+                                  
+                                  SnackBarBuilderAndDisplay(context, index);
+                                     
                                     },
                                     onHover: (_) {
                                       setState(() {
