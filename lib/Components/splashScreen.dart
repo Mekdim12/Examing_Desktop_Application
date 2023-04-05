@@ -288,22 +288,9 @@ class splashScreen extends StatelessWidget {
 
 					// if all goes right , there is no points keeping these file so delete export folder
 					await exportPath.delete(recursive: true);
-
-
                   
             }
-            
 
-
-            // List? textBasedQuestionData = resolvedListOfQuestionData[0];
-            
-
-           
-
-            // Box<Question> db = QuestionBox.getAllTheQuestions();
-            // await db.addAll(textBasedQuestionData);
-            // await db.addAll(imageBasedQuestionData);
-         
         }catch(Exception ){}
        
       } 
