@@ -168,8 +168,8 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
   int indexOfHovered = 0;
   List type_of_question = ['ሞተርሳይክል',
                           'አዉቶሞቢል',
+                           'ታክሲ 1',
                           'ታክሲ 2',
-                          'ታክሲ 1',
                           'ደረቅ 1',
                           'ደረቅ 2', 
                           'ደረቅ 3',
@@ -181,7 +181,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
     Box<QuestionTypeModel> dbs = QuestionTypeBox.getAllTheQuestionsTypes();
     dbs.toMap().forEach((key, value) {
         if (value.question_type_items.keys.toList()[0].toString() == currentQuestionkey){
-              currentQuestionkey = type_of_question[int.parse(value.question_type_items.values.toList()[0].toString())].toString();
+              currentQuestionkey = type_of_question[int.parse(value.question_type_items.values.toList()[0].toString()) - 1].toString();
         }
     });
     return currentQuestionkey;

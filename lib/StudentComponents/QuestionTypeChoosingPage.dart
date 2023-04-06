@@ -8,6 +8,7 @@ import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
+import './StudentQustionTtypeSpecficList.dart';
 
 class QuestionTypeChossingPage extends StatefulWidget {
 	String flag_for_page;
@@ -227,7 +228,12 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '8');	;
+																				}),
+																			);
+																			
 																		}
 																
 																	}, 
@@ -258,7 +264,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																				Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '9');	;
+																				}),
+																			);
 																		}
 
 																	}, 
@@ -289,7 +299,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '5');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ደረቅ 1', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -329,7 +343,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '6');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ደረቅ 2', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -359,7 +377,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '7');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ደረቅ 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -389,7 +411,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '3');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ታክሲ 1', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),		
@@ -429,7 +455,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '4');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ታክሲ 2', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -459,7 +489,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '2');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('አዉቶሞቢል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -489,7 +523,11 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-
+																			Navigator.of(context).pushReplacement(
+																				MaterialPageRoute(builder: (ctx) {
+																					return QuestionListDisplayPageWidget(flag_for_page, object, '1');	;
+																				}),
+																			);
 																		}
 																	}, 
 																	child:Text('ሞተርሳይክል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -533,12 +571,17 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 ህዝብ 2
 
 ህዝብ 2 : 9
+
 ህዝብ 1 : 8
+
 ደረቅ 3 : 7
+
 ደረቅ 2 : 6
+
 ደረቅ 1 : 5
-ታክሲ 2 : 4
-ታክሲ 1 : 3
+
+ታክሲ 2 : 4 --3
+ታክሲ 1 : 3  --4
 አዉቶሞቢል : 2
 ሞተርሳይክል : 1
 
