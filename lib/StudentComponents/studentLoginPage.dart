@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import '../Components/privillageChoosingPage.dart';
 import '../Components/adminLandingPage.dart';
+import './StudentMainLandingPage.dart';
 import './studentRegisterationPage.dart';
 import '../Models/ScoreModel.dart';
 
@@ -23,9 +24,15 @@ class StudentLoginPageState extends State<StudentLoginPageWidget> {
   bool _username_error = false;
 
   void fieldCheckerAndManipulator(String fieldValue) {
-    if ((fieldValue.toString().trim() == dotenv.env['userName1'] ||
-        _userNameOfAdmin.text.trim() == dotenv.env['userName2'] ||
-        _userNameOfAdmin.text.trim() == dotenv.env['userName3'])) {
+    Box<Student> db =StudentBox.getAllTheStudentsInfo();
+    bool flag = false;
+
+    db.toMap().forEach((key, value) {
+      if(value.id_number.toString().trim() == fieldValue.trim()){
+        flag = true;
+      }
+    });
+    if (flag) {
       _username_correct = true;
       _username_error = false;
     } else {
@@ -290,8 +297,12 @@ class StudentLoginPageState extends State<StudentLoginPageWidget> {
                                 
                                 
                                   if(_userNameOfAdmin.text.trim() == value.id_number && _passwordOfAdmin.text.trim() == value.password){
-                                        
-                                      return;
+                                       
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(builder: (ctx) {
+                                              return StudentMainLandingPageWidget(value);
+                                      }),
+                                    );
                                   }
                                 }
                             }
