@@ -5,7 +5,7 @@ part 'QuestionTypeModel.g.dart';
 class QuestionTypeModel extends HiveObject {
   @HiveField(0)
   late Map<String, String> question_type_items;
-
+  // questionId : questionType
   QuestionTypeModel(this.question_type_items);
 
 }

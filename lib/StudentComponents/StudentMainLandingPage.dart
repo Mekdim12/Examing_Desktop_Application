@@ -3,12 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import '../Components/privillageChoosingPage.dart';
 import '../Components/adminLandingPage.dart';
+import './QuestionTypeChoosingPage.dart';
 import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
 
 class StudentMainLandingPageWidget extends StatefulWidget {
-   Student studentObject;
    StudentMainLandingPageWidget(this.studentObject);
+
+   Student studentObject;
 
   @override
   State<StudentMainLandingPageWidget> createState() =>
@@ -16,7 +18,6 @@ class StudentMainLandingPageWidget extends StatefulWidget {
 }
 
 class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
-  
   Future openDialog(bool good_or_bad) => showDialog(
       barrierDismissible: true,
       context: context,
@@ -120,7 +121,7 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                 height: 45,
                 child: ElevatedButton.icon(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                      backgroundColor: MaterialStateProperty.all(Colors.black38),
                     ),
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
@@ -129,9 +130,9 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                         }),
                       );
                     },
-                    icon: const Icon(Icons.backspace_rounded),
+                    icon: const Icon(Icons.logout),
                     label: const Text(
-                      "Back",
+                      "Logout",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     )),
@@ -157,10 +158,9 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                 children: [
                                   Text("Welcome, ${object.fullName.toString().trim()}",
                                       style: TextStyle(
-                                      
                                           color: Colors.black54,
                                           decoration: TextDecoration.none)),
-                                ],
+                                     ],
                               )),
                           Container(
                               child: Row(
@@ -168,8 +168,7 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                             children: [
                               Text("አንኳን ደህና መጡ",
                                   style: TextStyle(
-                                      fontSize: 25,
-                                      
+                                      fontSize: 25, 
                                       color: Colors.black54,
                                       decoration: TextDecoration.none)),
                             ],
@@ -212,7 +211,13 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               margin: EdgeInsets.only(left: 25),
                                               height: 60,
                                               child:ElevatedButton(
-                                                onPressed: (){},
+                                                onPressed: (){
+                                                  Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                      return QuestionTypeChossingPage('1' ,object);
+                                                    }),
+                                                  );
+                                                },
                                                 child: Text("ፈተና ለመለማመድ", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )
@@ -231,7 +236,13 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               height: 60,
                                                 margin: EdgeInsets.only(left: 25),
                                               child:ElevatedButton(
-                                                onPressed: (){},
+                                                onPressed: (){
+                                                  Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                      return QuestionTypeChossingPage('2' ,object);
+                                                    }),
+                                                  );
+                                                },
                                                 child: Text("ፈተና ለመፈተን", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )
@@ -239,25 +250,7 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                           ],
                                         ),
                                       ),
-                                       Container(
-                                          margin: EdgeInsets.symmetric(vertical: 15),
-                                          child:Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                          Icon(Icons.info,size: 50), 
-                                            Container(
-                                              width: 500,
-                                              height: 60,
-                                                margin: EdgeInsets.only(left: 25),
-                                              child:ElevatedButton(
-                                                onPressed: (){},
-                                                child: Text("እጠቃላይ መረጃዎች", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
-                                                style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                       
                                       Container(
                                           margin: EdgeInsets.symmetric(vertical: 15),
                                           child:Row(
@@ -271,6 +264,25 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               child:ElevatedButton(
                                                 onPressed: (){},
                                                 child: Text("የተቀመጡ ጥያቄዎች", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
+                                                style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
+                                              )
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                          margin: EdgeInsets.symmetric(vertical: 15),
+                                          child:Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                          Icon(Icons.info,size: 50), 
+                                            Container(
+                                              width: 500,
+                                              height: 60,
+                                                margin: EdgeInsets.only(left: 25),
+                                              child:ElevatedButton(
+                                                onPressed: (){},
+                                                child: Text("እጠቃላይ መረጃዎች", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )
                                             ),
