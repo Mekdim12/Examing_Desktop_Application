@@ -11,13 +11,15 @@ import '../Models/StudentModels.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
 import './QuestionTypeChoosingPage.dart';
+import './studentTraningQuestionTestingPage.dart';
 
 class QuestionListDisplayPageWidget extends StatefulWidget {
 	QuestionListDisplayPageWidget(this.flag_for_page, this.studentObject,this.questionType, {super.key});
 
+	
 	String flag_for_page;
-	Student studentObject;
 	String questionType;
+	Student studentObject;
 
 	@override
 	State<QuestionListDisplayPageWidget> createState() =>
@@ -28,9 +30,18 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 	@override
 	Widget build(BuildContext context) {
 
+
 		Student object = widget.studentObject;
 		String flag_for_page = widget.flag_for_page;
 		String questionType = widget.questionType;
+
+		// print('----- >>------------');
+		// print(object);
+		// print(flag_for_page);
+		// print(questionType);
+
+		// print('-----------------');
+
 
 		return Container(
 			margin: EdgeInsets.zero,
@@ -107,7 +118,6 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 							Container(
 								constraints: const BoxConstraints.expand(),
 								width: double.infinity,
-								// height: double.infinity,
 								padding: const EdgeInsets.all(2),
 								decoration: const BoxDecoration(
 									gradient: LinearGradient(
@@ -134,7 +144,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 														fontSize: 22),
 											),
 										),
-										Expanded(child: ListItemBuilderWidget(1)),
+										Expanded(child: ListItemBuilderWidget(1, object, questionType, flag_for_page)),
 									],
 								),
 							),
@@ -168,7 +178,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 														fontSize: 22),
 											),
 										),
-										Expanded(child: ListItemBuilderWidget(2)),
+										Expanded(child: ListItemBuilderWidget(2, object,questionType, flag_for_page)),
 									],
 								),
 							),
@@ -179,9 +189,13 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 }
 
 class ListItemBuilderWidget extends StatefulWidget {
-	const ListItemBuilderWidget(this.flag, {super.key});
+	const ListItemBuilderWidget(this.flag, this.studentObject,this.questionType, this.flag_for_page, {super.key});
 
 	final int flag;
+
+  final String flag_for_page;
+  final String questionType;
+  final Student studentObject;
 
 	@override
 	State<ListItemBuilderWidget> createState() => _ListItemBuilderState();
@@ -241,7 +255,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 
 	List<Question> listOfItemsDataBaseFetcher(int flag) {
 		Box<Question> db = QuestionBox.getAllTheQuestions();
-		List<Question> temporaryHolder = [];
+    List<Question> temporaryHolder = [];
 
 		db.toMap().forEach((key, value) {
 			if (value.exam_type == flag) {
@@ -255,8 +269,47 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 	@override
 	Widget build(BuildContext context) {
 		int currentState = widget.flag;
+    
+    Student studentObject = widget.studentObject;
+    String questionType = widget.questionType;
+    String flag_for_page = widget.flag_for_page;
+	
 
-		List<Question> value = listOfItemsDataBaseFetcher(currentState);
+    
+    List tempListOfQuestionkeys = [];
+    List<Question> Questions = [];
+	Box<Question> db = QuestionBox.getAllTheQuestions();
+		db.toMap().forEach((key, value) {
+			Questions.add(value);
+        tempListOfQuestionkeys.add(value.key.toString());
+		});
+
+	List<QuestionTypeModel> tempvalue = [];
+    Box<QuestionTypeModel> dbs = QuestionTypeBox.getAllTheQuestionsTypes();
+
+    dbs.toMap().forEach((key, value) {
+      if (value.question_type_items.values.toList()[0].toString() == questionType){
+		
+          if( tempListOfQuestionkeys.contains(value.question_type_items.keys.toList()[0].toString())){
+             tempvalue.add(value);
+          }
+         
+        }
+    });
+
+	List<Question> value = [];
+	Questions.forEach((val) {	
+		tempvalue.forEach((element) {
+			if(element.question_type_items.keys.toList()[0].toString() == val.key.toString()){
+				if(currentState.toString() == val.exam_type.toString()){
+					value.add(val);
+				}
+				
+			}	
+		});		
+	});
+
+	
 		
 		if(value.length <=  0){
 			return Center(
@@ -268,7 +321,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 											style: TextStyle(
 													color: Colors.redAccent,
 													fontFamily: 'quickSand',
-													fontSize: 22,
+													fontSize: 32,
 													fontWeight: FontWeight.bold),
 										),
 									),
@@ -287,13 +340,11 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 									itemCount: value.length,
 									itemBuilder: (context, int index) => InkWell(
 										onTap: () {
-											
-											// Navigator.of(context).push(
-											// 	MaterialPageRoute(builder: (ctx) {
-											// 		return DetailAdminWidget(
-											// 				currentState, value[index].key);
-											// 	}),
-											// );
+											Navigator.of(context).push(
+												MaterialPageRoute(builder: (ctx) {
+													return StudentQuestionTypeSpecificTestingPageWidget(studentObject, flag_for_page, questionType, value[index].key);
+												}),
+											);
 										},
 										onHover: (val) {
 											indexOfHovered = index;
@@ -373,7 +424,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 											style: TextStyle(
 													color: Colors.redAccent,
 													fontFamily: 'quickSand',
-													fontSize: 22,
+													fontSize: 32,
 													fontWeight: FontWeight.bold),
 										),
 									),
@@ -390,7 +441,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 									style: TextStyle(
 											color: Colors.redAccent,
 											fontFamily: 'quickSand',
-											fontSize: 22,
+											fontSize: 32,
 											fontWeight: FontWeight.bold),
 								),
 							),
@@ -406,7 +457,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 								style: TextStyle(
 										color: Colors.redAccent,
 										fontFamily: 'quickSand',
-										fontSize: 22,
+										fontSize: 32,
 										fontWeight: FontWeight.bold),
 							),
 						),
