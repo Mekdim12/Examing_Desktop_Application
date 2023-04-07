@@ -94,7 +94,7 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
     Student object = widget.studentObject;
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
-
+    
     return Container(
       constraints: const BoxConstraints.expand(),
       width: double.infinity,
@@ -316,6 +316,11 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                           )
                         ],
                       ))
+
+
+
+
+
                 ],
               ))
         ],
