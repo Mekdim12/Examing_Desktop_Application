@@ -73,6 +73,7 @@ flutter:
     - assets/images/splashScreen.jpg
     - assets/images/backgroundEntrance.jpg
     - assets/images/entranceImageLogo.jpg
+    - assets/images/texturebackground.jpg
     - .env
 
   #   - images/a_dot_ham.jpeg
