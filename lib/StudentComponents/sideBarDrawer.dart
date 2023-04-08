@@ -24,10 +24,14 @@ import './QuestionTypeChoosingPage.dart';
 import './studentTraningQuestionTestingPage.dart';
 
 
+bool is_a_choosed = false;
+bool is_b_choosed = false;
+bool is_c_choosed = false;
+bool is_d_choosed = false;
 
 class StudentPageSidebarDrawerWidget extends StatefulWidget {
    StudentPageSidebarDrawerWidget(this.studentObject, this.flag_for_page, this.questionType, this.questionIndex, {super.key});
-
+  
 
   int questionIndex; // for displaying the question and marking active on sidebar
   Student studentObject; // student info tracking
@@ -39,6 +43,78 @@ class StudentPageSidebarDrawerWidget extends StatefulWidget {
 }
 
 class _StudentSidebarDrawerState extends State<StudentPageSidebarDrawerWidget> {
+
+    Future openDialog(bool good_or_bad) => showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) => AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            buttonPadding: const EdgeInsets.all(5),
+            contentPadding: const EdgeInsets.all(15),
+            title: (good_or_bad)
+                ? const Text("Successfully Registered")
+                : const Text("Not Registered"),
+            elevation: 8,
+            icon: (good_or_bad)
+                ? const Icon(
+                    Icons.gpp_good,
+                    weight: 50,
+                    size: 50,
+                  )
+                : const Icon(
+                    Icons.gpp_bad,
+                    weight: 50,
+                    size: 50,
+                  ),
+            iconColor: (good_or_bad) ? Colors.greenAccent : Colors.redAccent,
+            // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+            contentTextStyle: const TextStyle(
+                color: Color.fromARGB(255, 25, 57, 42),
+                fontWeight: FontWeight.bold),
+            content: Container(
+              alignment: Alignment.center,
+              width: 150,
+              height: 150,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Text(
+                textAlign: TextAlign.center,
+                (good_or_bad)
+                    ? "You Have Success-fully Registred to the database now try login with these credentials"
+                    : "The Operation Failed and The Data You Entered Is Not Inserted On The Database maybe try to correct your input entries mainly empty field insertion is not allowed and make sure the two passwords needs to be identical or maybe this id is already registred try contacting the admin",
+              ),
+            ),
+
+            actions: [
+              ElevatedButton.icon(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: const MaterialStatePropertyAll(Colors.black),
+                      backgroundColor: MaterialStatePropertyAll((good_or_bad)
+                          ? Colors.greenAccent
+                          : Colors.redAccent)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    (good_or_bad)
+                        ? Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) {
+                              return StudentLoginPageWidget();
+                            }),
+                          )
+                        : null;
+                  },
+                  icon: const Icon(Icons.close),
+                  label: Text(
+                    (good_or_bad)
+                        ? "Close & go to Login page"
+                        : "Close and re-try",
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                  ))
+            ],
+          ));
+
 
   List<Question> ListOfQuestions(String questionType){
     
@@ -152,18 +228,28 @@ class _StudentSidebarDrawerState extends State<StudentPageSidebarDrawerWidget> {
                     return Container( 
                       margin: EdgeInsets.symmetric(vertical: 7),
                       child:TextButton(     
-                      onPressed: (){}, 
+                      onPressed: (){
+                        Navigator.of(context).push(
+												MaterialPageRoute(builder: (ctx) {
+													return StudentQuestionTypeSpecificTestingPageWidget(object, flag_for_page, questionType, listQuestionObject[index].key );
+												}),
+											);
+                      }, 
                       child: Container(
+                        
                       
                         padding: EdgeInsets.all(10),
                         height: 45,
                       decoration:  BoxDecoration(
-                        color: (listQuestionObject[index].exam_type != 1)?  Color.fromRGBO(186, 175, 142, 0.51): Color.fromRGBO(209, 208, 205, 0.218),
+                          // border: Border.all(color: Colors.greenAccent, width: 5):null,
+                          borderRadius: BorderRadius.circular(10),
+                        color: (listQuestionObject[index].key == questionIndex)?Colors.greenAccent :(listQuestionObject[index].exam_type != 1)?  Color.fromRGBO(142, 133, 107, 0.122): Color.fromRGBO(209, 208, 205, 0.218),
                       ),
                       margin: const EdgeInsets.only(left: 20, right: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                     
                           Container(child:Text('${index+1} :' , style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'openSans', fontSize: 17, color: Colors.blueGrey),),),
                           Container(margin: EdgeInsets.symmetric(horizontal: 5),),       
                           Container(
