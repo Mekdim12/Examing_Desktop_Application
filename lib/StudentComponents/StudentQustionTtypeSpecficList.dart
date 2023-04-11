@@ -14,12 +14,13 @@ import './QuestionTypeChoosingPage.dart';
 import './studentTraningQuestionTestingPage.dart';
 
 class QuestionListDisplayPageWidget extends StatefulWidget {
-	QuestionListDisplayPageWidget(this.flag_for_page, this.studentObject,this.questionType, {super.key});
+	QuestionListDisplayPageWidget(this.flag_for_page, this.studentObject,this.questionType,{super.key});
 
 	
 	String flag_for_page;
 	String questionType;
 	Student studentObject;
+  
 
 	@override
 	State<QuestionListDisplayPageWidget> createState() =>
@@ -35,12 +36,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 		String flag_for_page = widget.flag_for_page;
 		String questionType = widget.questionType;
 
-		// print('----- >>------------');
-		// print(object);
-		// print(flag_for_page);
-		// print(questionType);
-
-		// print('-----------------');
+	
 
 
 		return Container(

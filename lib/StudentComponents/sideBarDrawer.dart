@@ -24,10 +24,7 @@ import './QuestionTypeChoosingPage.dart';
 import './studentTraningQuestionTestingPage.dart';
 
 
-bool is_a_choosed = false;
-bool is_b_choosed = false;
-bool is_c_choosed = false;
-bool is_d_choosed = false;
+
 
 class StudentPageSidebarDrawerWidget extends StatefulWidget {
    StudentPageSidebarDrawerWidget(this.studentObject, this.flag_for_page, this.questionType, this.questionIndex, {super.key});
@@ -295,7 +292,7 @@ class _StudentSidebarDrawerState extends State<StudentPageSidebarDrawerWidget> {
               );
             },
             child: const Text(
-              'ወደ ኋላ ተመለስ',
+              'ወደ ጥያቄዎች ዝርዝር ተመለስ',
               style: TextStyle(color: Colors.white),
             ),
           )),

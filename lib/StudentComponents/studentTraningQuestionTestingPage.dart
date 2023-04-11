@@ -23,12 +23,23 @@ import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
 import './QuestionTypeChoosingPage.dart';
 import './studentTraningQuestionTestingPage.dart';
+import 'StudentQustionTtypeSpecficList.dart';
+
+
+
+bool is_a_choosed = false;
+bool is_b_choosed = false;
+bool is_c_choosed = false;
+bool is_d_choosed = false;
+Timer? countdownTimer;
+Duration myDuration = Duration(seconds: 25);
+bool is_time_is_goingto_up = false;
 
 class StudentQuestionTypeSpecificTestingPageWidget extends StatefulWidget {
   StudentQuestionTypeSpecificTestingPageWidget(this.studentObject, this.flag_for_page, this.questionType, this.questionIndex, {super.key});
 
     String flag_for_page; // menu identifier
-	int questionIndex; // for displaying the question and marking active on sidebar
+	  int questionIndex; // for displaying the question and marking active on sidebar
     String questionType; // 1-9 question type
     Student studentObject; // student info tracking
 
@@ -37,13 +48,104 @@ class StudentQuestionTypeSpecificTestingPageWidget extends StatefulWidget {
 }
 
 class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionTypeSpecificTestingPageWidget> {
+
+  Future openDialog(bool good_or_bad, Question? questionObject, List items) => showDialog(
+      
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            buttonPadding: const EdgeInsets.all(5),
+            contentPadding: const EdgeInsets.all(15),
+            title: (good_or_bad)
+                ? const Text("መልሱን በትክክል መልሰዏል")
+                : const Text("መልሱን ተሳስተዋል"),
+            elevation: 8,
+            icon: (good_or_bad)
+                ? const Icon(
+                    Icons.gpp_good,
+                    weight: 50,
+                    size: 50,
+                  )
+                : const Icon(
+                    Icons.gpp_bad,
+                    weight: 50,
+                    size: 50,
+                  ),
+            iconColor: (good_or_bad) ? Colors.greenAccent : Colors.redAccent,
+            // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+            contentTextStyle: const TextStyle(
+                color: Color.fromARGB(255, 25, 57, 42),
+                fontWeight: FontWeight.bold),
+            content: Container(
+              alignment: Alignment.center,
+              width: 150,
+              height: 150,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Text(
+                textAlign: TextAlign.center,
+                (good_or_bad)
+                    ? "የመረጡት ምርጫ ትክክለኛ ምላሽ ነው"
+                    : "የመረጡት ምርጫ ስህተት ነው ለዚህ ጥያቄ ትክክለኛ ምላሽ ሚሆነው ምርጫ ${questionObject?.correct_answer} ነው ሚሆነው ",
+              ),
+            ),
+
+            actions: [
+              ElevatedButton.icon(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: MaterialStatePropertyAll(Colors.black),
+                      backgroundColor: MaterialStatePropertyAll((good_or_bad)
+                          ? Colors.greenAccent
+                          : Colors.redAccent)),
+                  onPressed: () {
+                    
+                    	TimeCounterWidget(items[0],items[1],  items[2], items[3]);
+                      setState(() {
+                              countdownTimer!.cancel();
+                              myDuration = Duration(seconds: 25);
+                              is_time_is_goingto_up = false;
+                      });
+                                      
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.close),
+                  label: Text("ተመለስ",
+                        style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ))
+            ],
+          ));
+
+
+
+
   @override
   Widget build(BuildContext context) {
+   
+      is_a_choosed = false;
+      is_b_choosed = false;
+      is_c_choosed = false;
+      is_d_choosed = false;
 
 	Student object = widget.studentObject;
 	String flag_for_page = widget.flag_for_page;
 	String questionType = widget.questionType;
 	int questionIndex = widget.questionIndex;
+  String cwd = Hive.box('CurrenWorkingDirectory').get('cwd').toString();
+  Box<Question> all_the_question= QuestionBox.getAllTheQuestions();
+  
+
+  Question? current_selected_question_object;
+  all_the_question.toMap().forEach((key, value) {
+    if(key == questionIndex){
+      current_selected_question_object = value;
+    }
+     
+  });
 
 	List questionTypeItems = ['ሞተርሳይክል',
                               'አዉቶሞቢል',
@@ -60,7 +162,16 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       child: Scaffold(
-		
+        onDrawerChanged: (val){
+            if(val){
+              	TimeCounterWidget(object,flag_for_page, questionType, questionIndex);
+                      setState(() {
+                              countdownTimer!.cancel();
+                              myDuration = Duration(seconds: 25);
+                              is_time_is_goingto_up = false;
+                      });
+            }
+        },
         drawer:  StudentPageSidebarDrawerWidget(object, flag_for_page, questionType, questionIndex),
         appBar: AppBar(
           foregroundColor: const Color(0xFFF5EBE0).withOpacity(1),
@@ -75,7 +186,6 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
         body:  Container(
           width: double.infinity,
           height: double.infinity,
-          // color: const Color(0xFFF5EBE0),
           decoration: const BoxDecoration(
 									gradient: LinearGradient(
 									begin: Alignment.centerLeft,
@@ -99,7 +209,6 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 						borderRadius: BorderRadius.circular(25)
 					),
 					margin: const EdgeInsets.only(bottom: 10, left: 100, right:100, top:35 ),
-					// width: 1800,
 					height: 650,
 					child: Card(
 						shadowColor: Colors.black,
@@ -177,18 +286,27 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
  
         
 												Container(
+                            alignment: Alignment.center,
 														margin: EdgeInsets.symmetric(vertical: 30, horizontal: 35),
-														padding: EdgeInsets.only(top:15,bottom: 5),
+														padding: EdgeInsets.only(top: (current_selected_question_object!.question.keys.first == 2) ?0:15,bottom: 5),
 														height: 160,
 														child:SingleChildScrollView(
 															scrollDirection: Axis.vertical,
-															child:Text('QuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestion nuQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionmber one ?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color:Colors.black),),	
+															child: (current_selected_question_object!.question.keys.first == 1)?Text(textAlign: TextAlign.center,'${current_selected_question_object!.question.values.first}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color:Colors.black,),) : Container(
+																							alignment: Alignment.center,
+																							child: Image.file(
+																								fit: BoxFit.contain,
+                                                width:400,
+                                                height:150,
+																								File('${cwd}\\CopiedFileAssets\\${current_selected_question_object!.question.values.first}')),
+																							),	
 																						)),
 
 												Column(
 
 												mainAxisAlignment: MainAxisAlignment.end,
-												children : [SingleChildScrollView(
+												children : [
+													SingleChildScrollView(
 													physics: NeverScrollableScrollPhysics(),
 													child:
 												 Container(
@@ -208,7 +326,16 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																		height: 160,
 																		width: 650,
 																		child: TextButton(
-																			onPressed: (){},
+																			onPressed: (){
+                                      
+                                        
+                                        is_a_choosed = true;
+                                        if('A' == current_selected_question_object?.correct_answer){
+                                            openDialog(true, current_selected_question_object,   [object, flag_for_page, questionType, questionIndex]);
+                                        }else{
+                                           openDialog(false, current_selected_question_object,  [object, flag_for_page, questionType, questionIndex]);
+                                        }
+                                      },
 																			child: Container(
 																			width: 650,
 																			height: 160,
@@ -237,7 +364,12 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																						height: 160,
 																						child: SingleChildScrollView(
 																								scrollDirection: Axis.vertical,
-																								child:Text('Question nuQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionQuestionmber one ?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color:Colors.black),),	
+																								child:(current_selected_question_object?.list_choice[0].keys.first == 1)? Text(current_selected_question_object!.list_choice[0].values.first, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color:Colors.black),) : Container(
+																							alignment: Alignment.center,
+																							child: Image.file(
+																								fit: BoxFit.contain,
+																									File('${cwd}\\CopiedFileAssets\\${current_selected_question_object!.list_choice[0].values.first}')),
+																							),	
 																						),
 																						decoration: BoxDecoration(
 																							color: Color.fromARGB(95, 180, 180, 216),
@@ -256,7 +388,14 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																		height: 160,
 																		width: 650,
 																		child: TextButton(
-																			onPressed: (){},
+																			onPressed: (){
+                                        is_c_choosed = true;
+                                        if('C' == current_selected_question_object?.correct_answer){
+                                            openDialog(true, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }else{
+                                           openDialog(false, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }
+                                      },
 																			child: Container(
 																			width: 650,
 																			height: 160,
@@ -283,13 +422,15 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																							padding: EdgeInsets.only(top:10, bottom: 10, left:15, right: 5),
 																						width: 550,
 																						height: 160,
-																						child: Container(
+																						child:SingleChildScrollView(
+																								scrollDirection: Axis.vertical,
+																								child:(current_selected_question_object?.list_choice[2].keys.first == 1)? Text(current_selected_question_object!.list_choice[2].values.first, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color:Colors.black),) : Container(
 																							alignment: Alignment.center,
 																							child: Image.file(
 																								fit: BoxFit.contain,
-																								File(
-																									"./CopiedFileAssets/1285073929.jpg")),
-																							),
+																									File('${cwd}\\CopiedFileAssets\\${current_selected_question_object!.list_choice[2].values.first}')),
+																							),	
+																						),
 																						decoration: BoxDecoration(
 																							color: Color.fromARGB(95, 180, 180, 216),
 																							borderRadius: BorderRadius.circular(10),
@@ -312,7 +453,7 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 														] ),
 													          
 
-													Container(margin: EdgeInsets.symmetric(vertical: 15)),
+														Container(margin: EdgeInsets.symmetric(vertical: 15)),
 											
 												
 														Container(
@@ -328,7 +469,14 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																		height: 160,
 																		width: 650,
 																		child: TextButton(
-																			onPressed: (){},
+																			onPressed: (){
+                                        is_b_choosed = true;
+                                        if('B' == current_selected_question_object?.correct_answer){
+                                            openDialog(true, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }else{
+                                           openDialog(false, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }
+                                      },
 																			child: Container(
 																			width: 650,
 																			height: 160,
@@ -355,9 +503,14 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																							padding: EdgeInsets.only(top:10, bottom: 10, left:15, right: 5),
 																						width: 550,
 																						height: 160,
-																						child: SingleChildScrollView(
+																						child:SingleChildScrollView(
 																								scrollDirection: Axis.vertical,
-																								child:Text('Question number one ?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color:Colors.black),),	
+																								child:(current_selected_question_object?.list_choice[1].keys.first == 1)? Text(current_selected_question_object!.list_choice[1].values.first, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color:Colors.black),) : Container(
+																							alignment: Alignment.center,
+																							child: Image.file(
+																								fit: BoxFit.contain,
+																									File('${cwd}\\CopiedFileAssets\\${current_selected_question_object!.list_choice[1].values.first}')),
+																							),	
 																						),
 																						decoration: BoxDecoration(
 																							color: Color.fromARGB(95, 180, 180, 216),
@@ -376,7 +529,14 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																		height: 160,
 																		width: 650,
 																		child: TextButton(
-																			onPressed: (){},
+																			onPressed: (){
+                                        is_d_choosed = true;
+                                        if('D' == current_selected_question_object?.correct_answer){
+                                            openDialog(true, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }else{
+                                           openDialog(false, current_selected_question_object, [object, flag_for_page, questionType, questionIndex]);
+                                        }
+                                      },
 																			child: Container(
 																			width: 650,
 																			height: 160,
@@ -403,13 +563,15 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																							padding: EdgeInsets.only(top:10, bottom: 10, left:15, right: 5),
 																						width: 550,
 																						height: 160,
-																						child: Container(
+																						child: SingleChildScrollView(
+																								scrollDirection: Axis.vertical,
+																								child:(current_selected_question_object?.list_choice[3].keys.first == 1)? Text(current_selected_question_object!.list_choice[3].values.first, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color:Colors.black),) : Container(
 																							alignment: Alignment.center,
 																							child: Image.file(
 																								fit: BoxFit.contain,
-																								File(
-																									"./CopiedFileAssets/1285073929.jpg")),
-																							),
+																									File('${cwd}\\CopiedFileAssets\\${current_selected_question_object!.list_choice[3].values.first}')),
+																							),	
+																						),
 																						decoration: BoxDecoration(
 																							color: Color.fromARGB(95, 180, 180, 216),
 																							borderRadius: BorderRadius.circular(10),
@@ -426,18 +588,12 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																	]
 																),
 															),
-
 															
-
 														],
 
-													
-														
 														 ),
 													      
 														) ,
-
-
 
 															Container(margin: EdgeInsets.symmetric(vertical: 15)),			
 														],
@@ -451,157 +607,7 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 												)
 
 												])
-												// 	Container(
-												// 		height: 180,
-												// 		// color: Colors.deepPurpleAccent,
-												// 		margin: EdgeInsets.symmetric(vertical: 140, horizontal: 35),
-												// 		child:Column(
-												// 			children: [
-												// 				Container(
-												// 					color: Colors.cyan,
-												// 					margin: EdgeInsets.only(top: 25),
-												// 					child:Row(
-												// 					mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-												// 					children: [
-												// 						Container(
-												// 						height: 140,
-												// 						width: 650,
-												// 						child: TextButton(
-												// 							onPressed: (){},
-												// 							child: Container(
-												// 							width: 650,
-												// 							height: 140,
-												// 							child: Column(
-												// 								mainAxisAlignment: MainAxisAlignment.center,
-												// 								children: [
-												// 								Row(
-												// 									children : [
-												// 										Container(
-												// 										margin: EdgeInsets.symmetric(horizontal: 10),
-												// 										alignment: Alignment.center,
-												// 										width:50,
-												// 										height: 50,
-												// 										decoration: BoxDecoration(
-												// 											color: Colors.blueGrey,
-												// 											borderRadius: BorderRadius.circular(50)
-												// 										),
-												// 										padding: EdgeInsets.all(5),
-												// 										child: Text('A', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.greenAccent),),),
-
-												// 										Container(
-												// 											alignment: Alignment.topLeft,
-												// 											margin: EdgeInsets.symmetric(horizontal:5 ),
-												// 											padding: EdgeInsets.only(top:10, bottom: 10, left:15, right: 5),
-												// 										width: 550,
-												// 										height: 140,
-												// 										child: SingleChildScrollView(
-												// 												scrollDirection: Axis.vertical,
-												// 												child:Text('Question number one ?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color:Colors.black),),	
-												// 										),
-												// 										decoration: BoxDecoration(
-												// 											color: Color.fromARGB(95, 180, 180, 216),
-												// 											borderRadius: BorderRadius.circular(10),
-												// 											border: Border.all(color: Colors.black38),
-												// 										),),
-
-												// 									]
-												// 								)
-												// 								],
-												// 							),
-												// 							))
-												// 						),
-																	
-												// 						Container(
-												// 						height: 140,
-												// 						width: 650,
-												// 						child: TextButton(
-												// 							onPressed: (){},
-												// 							child: Container(
-												// 							width: 650,
-												// 							height: 140,
-												// 							child: Column(
-												// 								mainAxisAlignment: MainAxisAlignment.center,
-												// 								children: [
-												// 								Row(
-												// 									children : [
-												// 										Container(
-												// 										margin: EdgeInsets.symmetric(horizontal: 10),
-												// 										alignment: Alignment.center,
-												// 										width:50,
-												// 										height: 50,
-												// 										decoration: BoxDecoration(
-												// 											color: Colors.blueGrey,
-												// 											borderRadius: BorderRadius.circular(50)
-												// 										),
-												// 										padding: EdgeInsets.all(5),
-												// 										child: Text('C', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.greenAccent),),),
-
-												// 										Container(
-												// 											alignment: Alignment.topLeft,
-												// 											margin: EdgeInsets.symmetric(horizontal:5 ),
-												// 											padding: EdgeInsets.only(top:10, bottom: 10, left:15, right: 5),
-												// 										width: 550,
-												// 										height: 140,
-												// 										child: Container(
-												// 											alignment: Alignment.center,
-												// 											child: Image.file(
-												// 												fit: BoxFit.contain,
-												// 												// width: 400,
-												// 												// height: 450,
-												// 												File(
-												// 													"./CopiedFileAssets/1285073929.jpg")),
-												// 											),
-												// 										decoration: BoxDecoration(
-												// 											color: Color.fromARGB(95, 180, 180, 216),
-												// 											borderRadius: BorderRadius.circular(10),
-												// 											border: Border.all(color: Colors.black38),
-												// 										),),
-
-												// 									]
-												// 								)
-												// 								],
-												// 							),
-												// 							))
-												// 						),
-																	
-												// 					]
-												// 				),
-												// 			),
-
-															
-
-												// 		]
-												// 	),
-												// ),
-
-
-													
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-													
-											
-
+												
 													],
 												)
 									)
@@ -609,41 +615,6 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 								)
 							),
 				),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 				Container(
@@ -757,23 +728,9 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 													),
 												),
 												),
-												Container(
-													// margin: EdgeInsets.only(left:50, top: 30),
-													child: Column(
-														mainAxisAlignment: MainAxisAlignment.center,
-														children: [
-															Row(
-																mainAxisAlignment: MainAxisAlignment.center,
-																children: [
-																	Text('00', style: TextStyle(fontFamily: 'digital' ,color: Colors.greenAccent, fontSize:65, ),),
-																	Text(':', style: TextStyle(fontFamily: 'digital' ,color: Colors.greenAccent, fontSize:65, ),),
-																	Text('00', style: TextStyle(fontFamily: 'digital' ,color: Colors.greenAccent, fontSize:65, ),)
-																],
-															)
-														],
-													)
-													
-													)
+                        
+												TimeCounterWidget(object,flag_for_page,  questionType, questionIndex)
+												
 											],
 											),)
 							),
@@ -834,7 +791,7 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																	decoration:  BoxDecoration(
 																		border: Border.all(),
 																		 shape: BoxShape.circle,
-																		image: DecorationImage(image:  NetworkImage('https://img.icons8.com/fluency/96/null/person-male.png'))
+																		// image: DecorationImage(image:  NetworkImage('https://img.icons8.com/fluency/96/null/person-male.png'))
 																	),
 																	
 																),
@@ -843,7 +800,7 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 																	children: [
 																		Container( child: Text('የተማሪው ኮድ ፡', style: TextStyle(color: Colors.greenAccent, fontSize: 17, fontWeight: FontWeight.bold),)),
 																		Container(margin: EdgeInsets.symmetric(horizontal: 3),),
-																		Container( child: Text(' XXXX ኮድ ፡', style: TextStyle(color: Colors.redAccent, fontSize: 17, fontWeight: FontWeight.bold),)),
+																		Container( child: Text('${object.id_number.toString()}', style: TextStyle(color: Colors.redAccent, fontSize: 17, fontWeight: FontWeight.bold),)),
 																	]
 																)
 																
@@ -860,8 +817,6 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 					) ,
 				)
 				
-
-		  
 			],
 		  )
         ),
@@ -877,6 +832,206 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 
 
 
+class TimeCounterWidget extends StatefulWidget {
+   TimeCounterWidget(this.studentObject, this.flag_for_page, this.questionType, this.questionIndex,{super.key});
+   String flag_for_page; // menu identifier
+	  int questionIndex; // for displaying the question and marking active on sidebar
+    String questionType; // 1-9 question type
+    Student studentObject; // student info tracking
+
+
+  @override
+  State<TimeCounterWidget> createState() => TimeCounterState();
+}
+
+class TimeCounterState extends State<TimeCounterWidget> {
+   
+  	
+	
+	void startTimer() {
+    countdownTimer =
+        Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
+  	}
+	@override 
+	void initState() {
+     startTimer();
+    super.initState();
+  }
+
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+
+	void setCountDown() {
+    final reduceSecondsBy = 1;
+    if( this.mounted){
+        super.setState(() {
+        final seconds = myDuration.inSeconds - reduceSecondsBy;
+        if (seconds < 0) {
+          countdownTimer!.cancel();
+        } else {
+          myDuration = Duration(seconds: seconds);
+        }
+    });
+    }
+    
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel();
+    super.dispose();
+  }
+
+
+   Future openDialog() => showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            buttonPadding: const EdgeInsets.all(5),
+            contentPadding: const EdgeInsets.all(15),
+            title:const Text("መልሱን ለመለመስ የተስጥዎት ግዜ አልቋል"),
+            elevation: 8,
+            icon: const Icon(
+                    Icons.gpp_bad,
+                    weight: 50,
+                    size: 50,
+                  ),
+            iconColor:  Colors.redAccent,
+            // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+            contentTextStyle: const TextStyle(
+                color: Color.fromARGB(255, 25, 57, 42),
+                fontWeight: FontWeight.bold),
+            content: Container(
+              alignment: Alignment.center,
+              width: 150,
+              height: 150,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Text(
+                textAlign: TextAlign.center,
+                "ይህን ጥያቄ ለመስራት ከተሰጥዎት 2 ደቂቃ ዉስጥ ጥያቄውን ሰርተው አልጨረሱም አብክዉዎን አንደገና ይምክሩ ",
+              ),
+            ),
+
+            actions: [
+              ElevatedButton.icon(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: MaterialStatePropertyAll(Colors.black),
+                      backgroundColor: MaterialStatePropertyAll(Colors.redAccent)),
+                  onPressed: () {
+                     Navigator.of(context).push(
+												MaterialPageRoute(builder: (ctx) {
+													return StudentQuestionTypeSpecificTestingPageWidget(widget.studentObject, widget.flag_for_page, widget.questionType, widget.questionIndex );
+												}),
+											);
+                  },
+                  icon: const Icon(Icons.close),
+                  label: Text("አንደጋና ይሞክሩ",
+                        style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold
+                    ),
+                  )),
+
+                  ElevatedButton.icon(
+                  style: ButtonStyle(
+                      padding: const MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+                      iconColor: MaterialStatePropertyAll(Colors.black),
+                      backgroundColor: MaterialStatePropertyAll(Colors.greenAccent)),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (ctx) {
+                    
+                      return   QuestionListDisplayPageWidget(widget.flag_for_page, widget.studentObject, widget.questionType);
+                    }),
+                  );
+                  },
+                  icon: const Icon(Icons.close),
+                  label: Text("ወደ ጥያቄዎች ዝርዝር",
+                        style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ))
+            ],
+          ));
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+	
+ 
+ 
+	  String strDigits(int n) => n.toString().padLeft(2, '0');
+    
+    final minutes = strDigits(myDuration.inMinutes.remainder(60));
+    final seconds = strDigits(myDuration.inSeconds.remainder(60));
+
+         
+      if(  (int.parse(minutes.trim()) == 0  &&  int.parse(seconds.trim()) <= 30) ){
+         is_time_is_goingto_up = true;
+      }
+
+      if ( (int.parse(minutes.trim()) == 0 && int.parse(seconds.trim()) == 0) && countdownTimer?.isActive == true){
+        
+         if(this.mounted){
+            
+
+            setState(() {
+                countdownTimer!.cancel();
+                myDuration = Duration(seconds: 25);
+                is_time_is_goingto_up = false;
+            });
+
+
+             if(!( ( (is_a_choosed && is_b_choosed) & is_c_choosed ) & is_d_choosed)){
+                  // WidgetsBinding.instance.addPersistentFrameCallback((x) {
+                    
+                    Future.delayed(Duration.zero,(){
+                        openDialog();
+                     
+                    });
+                // });
+              }
+             
+
+         }
+         
+       
+       
+      }
+  
+
+
+    return Container(
+													
+				child: Column(
+					mainAxisAlignment: MainAxisAlignment.center,
+					children: [
+						Row(
+							mainAxisAlignment: MainAxisAlignment.center,
+							children: [
+							
+								Text('${minutes}', style: TextStyle(fontFamily: 'digital' , color:	(is_time_is_goingto_up)? Colors.redAccent :  Colors.greenAccent, fontSize:65, ),),
+								Text(':', style: TextStyle(fontFamily: 'digital' ,color:	(is_time_is_goingto_up)? Colors.redAccent :  Colors.greenAccent, fontSize:65, ),),
+								Text('${seconds}', style: TextStyle(fontFamily: 'digital' ,color:	(is_time_is_goingto_up)?  Colors.redAccent :  Colors.greenAccent, fontSize:65, ),)
+							],
+						)
+					],
+				)
+				
+				);
+  }
+}
 
 
 
@@ -888,285 +1043,3 @@ class StudentQuestionTypeSpecificTestingPageState extends State<StudentQuestionT
 
 
 
-
-
-
-/*
-Container(
-                                      alignment: Alignment.center,
-                                      child: Image.file(
-                                          fit: BoxFit.contain,
-                                          width: 400,
-                                          height: 250,
-                                          File(
-                                              "$cwd\\CopiedFileAssets\\${currentQuestion.question.values.toList()[0].toString()}")),
-                                    )
-
-
-
-
-
-
-
-
-
-
-
-	 Container(
-                      margin: const EdgeInsets.only(top: 25),
-                      width: 1650,
-                      height: 800,
-                      child: Column(
-                        children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 25),
-                      width: 1650,
-                      height: 750,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: Text(
-																	'${questionTypeItems[int.parse(questionType)  - 1 ] }',
-																	style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold)),),
-                                  Container(margin: EdgeInsets.symmetric(horizontal: 10),),
-                                  Container(child: Text('የሙከራ ጥያቄ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),)
-                              ],
-                            )
-                          ),
-                          Container(
-                            width: 1650,
-                            height: 700,
-                            child: Card(
-                              color: Color.fromARGB(29, 96, 125, 139),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              elevation: 20,
-                              shadowColor: Color.fromRGBO(255, 239, 186, 1),
-                              child: Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 100 ),
-                                      height: 50,
-                                      child:Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Container(child: Text("00", style: TextStyle(fontFamily: 'digital', fontWeight: FontWeight.bold, fontSize: 50,color: Colors.teal),),),
-                                          Container(child: Text(":", style: TextStyle(fontFamily: 'digital',fontWeight: FontWeight.bold, fontSize: 30,color: Colors.blue),),),
-                                          Container(child: Text("00", style: TextStyle(fontFamily: 'digital',fontWeight: FontWeight.bold, fontSize: 50,color: Colors.teal),),)
-                                        ],
-                                      ),
-                                    ),
-                                    
-                                    Container(
-                                      width: 1650,
-                                      decoration:BoxDecoration(
-                                        //  color:Colors.white38,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      height: 150,
-                                     
-                                      margin: EdgeInsets.symmetric(horizontal: 15),
-                                      child:Row(
-                                        children: [
-                                            Container(
-                                              height: 150,
-                                               
-                                              padding: EdgeInsets.zero,
-                                              margin: EdgeInsets.zero,
-                                              child:Column(  
-                                                  children: [
-                                                    Container(
-                                                      
-                                                      decoration: BoxDecoration(
-                                                        color:Colors.white54,
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(15))
-                                                    ),
-                                                      height: 75,
-                                                      width: 150,
-                                                      child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                             Text('1.',style: TextStyle(color:Colors.green,fontWeight: FontWeight.bold, fontSize: 35),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    Container(
-                                                      height:75,
-                                                      width: 150,
-                                                      decoration: BoxDecoration(
-                                                      color: Colors.white54,
-                                                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
-                                                    ),
-                                                    child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text('ጥያቄ ቁ',style: TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 14),)],
-                                                    ),
-                                                      
-                                                    ),
-                                                  ],
-                                              ),
-
-                                          ),
-                                        
-                                           Container(
-                                            margin: EdgeInsets.symmetric(horizontal: 1),
-                                             
-                                              padding: EdgeInsets.all(15),
-                                              height:150,
-                                              width: 1400,
-                                              decoration: BoxDecoration(
-                                                color:Colors.white38,
-                                                borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight:   Radius.circular(15))
-                                              ),
-                                              child: SingleChildScrollView(child:Text('some', style: TextStyle(fontSize: 22, fontFamily: 'openSans', fontWeight: FontWeight.bold, color: Colors.black),),),
-                                            )
-                                        ],
-                                      ),
-                                    ),
-
-
-                                    Container(
-                                      child:Column(
-                                          children: [
-                                             Container(
-                                                margin: EdgeInsets.symmetric(vertical: 25),
-                                                child:Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                        Container(
-                                                          height: 150,
-                                                          width: 650,
-                                                          // color:Colors.red,
-                                                          child: TextButton(
-                                                            onPressed: (){},
-                                                            child: Container(
-                                                              width: 650,
-                                                              height: 150,
-                                                              child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                  Row(
-                                                                      children : [
-                                                                        Container(
-                                                                          margin: EdgeInsets.symmetric(horizontal: 10),
-                                                                          alignment: Alignment.center,
-                                                                          width:50,
-                                                                          height: 50,
-                                                                          decoration: BoxDecoration(
-                                                                            color: Color.fromRGBO(200, 104, 25, 1),
-                                                                            borderRadius: BorderRadius.circular(50)
-                                                                          ),
-                                                                          padding: EdgeInsets.all(5),
-                                                                          child: Text('A', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),),
-
-                                                                        Container(
-                                                                           width: 550,
-																		   height: 150,
-																		   child: Text('ss'),
-																		   decoration: BoxDecoration(
-																			border: Border.all(),
-																		   ),),
-
-                                                                      ]
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ))
-                                                        ),
-
-
-                                                        Container(
-                                                          height: 150,
-                                                          width: 650,
-                                                          color:Colors.yellow
-                                                        ),
-                                                  ],
-                                                ),
-                                              ),
-
-                                              Container(
-                                                margin: EdgeInsets.symmetric(vertical: 25),
-                                                child:Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                        Container(
-                                                          height: 150,
-                                                          width: 650,
-                                                          color:Colors.green
-                                                        ),
-
-
-                                                        Container(
-                                                          height: 150,
-                                                          width: 650,
-                                                          color:Colors.blue
-                                                        ),
-                                                  ],
-                                                ),
-                                              )
-                                          ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ),
-                          )
-                        ],
-                      )),
-                      ],
-                    ))
-           
-
- */
-
-/**
-   Stack(
-								children: <Widget>[
-									Container(
-									width: 1650,
-									height: 750,
-									margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
-									padding: EdgeInsets.only(bottom: 10),
-									decoration: BoxDecoration(
-										border: Border.all(
-											color: Colors.blueGrey, width: 2),
-										borderRadius: BorderRadius.circular(15),
-										shape: BoxShape.rectangle,
-									),
-									),
-									Container(
-												width: 1650,
-												height: 700,
-												child: Column(
-													children: [
-															Positioned(
-																left: 50,
-																top: 12,
-																child:  Container(
-																	padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-																	color:Color.fromRGBO(255, 239, 186, 0.751),
-																	child: Text(
-																	'${questionTypeItems[int.parse(questionType)  - 1 ] }',
-																	style: TextStyle(color: Colors.black, fontSize: 20),
-																	),
-																),
-															)
-
-													],
-												),
-										)
-									
-								  ],
-								)          
-                      
- */
