@@ -225,29 +225,6 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 		return currentQuestionkey;	
 	}
 
-	void SnackBarBuilderAndDisplay(BuildContext context, int index) {
-		final snackBar = SnackBar(
-			content: Container(
-				height: 32,
-				child: Center(
-						child: Text(
-					"You Have SucessFull Deleted",
-					style: TextStyle(color: Colors.greenAccent),
-				)),
-			),
-			action: SnackBarAction(
-				label: 'close',
-				onPressed: () {
-					ScaffoldMessenger.of(context).removeCurrentSnackBar();
-					// Some code to undo the change.
-				},
-			),
-		);
-
-		// Find the ScaffoldMessenger in the widget tree
-		// and use it to show a SnackBar.
-		ScaffoldMessenger.of(context).showSnackBar(snackBar);
-	}
 
 	List<Question> listOfItemsDataBaseFetcher(int flag) {
 		Box<Question> db = QuestionBox.getAllTheQuestions();

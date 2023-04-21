@@ -7,6 +7,8 @@ import './Components/splashScreen.dart';
 import './Models/QuestionModel.dart';
 import './Models/StudentModels.dart';
 import './Models/QuestionTypeModel.dart';
+import './Models/StudentFavoriteModel.dart';
+
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
@@ -16,6 +18,8 @@ Future<void> main() async {
   Hive.registerAdapter(QuestionAdapter());
   Hive.registerAdapter(StudentAdapter());
   Hive.registerAdapter(QuestionTypeModelAdapter());
+  Hive.registerAdapter(StudentFavoriteTypeModelAdapter());
+
 
   // creating Question Information Box For Holding All The Questions
   
@@ -26,11 +30,12 @@ Future<void> main() async {
   Box currentWorkingDirectory = await Hive.openBox('CurrenWorkingDirectory');
   Box studentInformationBox = await Hive.openBox<Student>('StudentInformationMain');
   Box questionTypeBox = await Hive.openBox<QuestionTypeModel>('QuestionTypeMain');
+  Box studentFav = await Hive.openBox<StudentFavoriteTypeModel>('StudentFavMain');
   
 
   if ( !firstTime) {
     
-       await prefs.setBool('first_run', true);
+      await prefs.setBool('first_run', true);
   
       await  questionmodelBox.deleteFromDisk();
       await  currentWorkingDirectory.deleteFromDisk();
@@ -39,6 +44,7 @@ Future<void> main() async {
       currentWorkingDirectory = await Hive.openBox('CurrenWorkingDirectory');
       studentInformationBox = await Hive.openBox<Student>('StudentInformationMain');
       questionTypeBox = await Hive.openBox<QuestionTypeModel>('QuestionTypeMain');
+      studentFav = await Hive.openBox<StudentFavoriteTypeModel>('StudentFavMain');
   
       var CWD = Hive.box('CurrenWorkingDirectory');
       await CWD.put('cwd', null);

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:diving_licence_traning_center_student/StudentComponents/StudentMainLandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,10 +11,10 @@ import '../Models/StudentModels.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
 import './StudentQustionTtypeSpecficList.dart';
-
+import './StudetnMainExamTakingPage.dart';
 class QuestionTypeChossingPage extends StatefulWidget {
 	String flag_for_page;
-    Student studentObject;
+  Student studentObject;
 
    QuestionTypeChossingPage(this.flag_for_page, this.studentObject);
    
@@ -74,7 +76,103 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
                   ))
             ],
           ));
+  
 
+  List allinformationAboutQuestionCollector(String questionType){
+    List finalCollectionOfList = [];
+    Box<QuestionTypeModel> all_qustion_type = QuestionTypeBox.getAllTheQuestionsTypes();
+    
+
+    Box<Question>  all_the_questions = QuestionBox.getAllTheQuestions();
+    all_the_questions.toMap().forEach((key, value) {
+      
+        all_qustion_type.toMap().forEach((keytype, valuetype) {
+            if(valuetype.question_type_items.keys.first.toString().trim() == key.toString().trim() && valuetype.question_type_items.values.first.toString().trim() == questionType ){
+                  finalCollectionOfList.add(value);  
+                }
+        });     
+    });
+
+
+    return finalCollectionOfList;
+  }
+
+  List randomizeTheList(List all_questions){
+   
+    List randomeListOfQuestion = [];
+
+    List  imageBasedQuestion = [];
+    List textBasedQuestion = [];
+    
+    
+    all_questions.forEach((element) {
+      if(element.exam_type == 1){
+        textBasedQuestion.add(element);
+      }else{
+        imageBasedQuestion.add(element);
+      }
+     
+    });
+
+      
+    List resolvedImageList = [];
+    
+    int tottlaAmountquestionAvailable  = textBasedQuestion.length + imageBasedQuestion.length;
+
+    // amount of tottal question required is 30% of the tottal question 
+    // and the text is 70% 
+    // the 30% can be calculated as follow
+
+
+    List resolvedItemsOfQuestionImage = [];
+    List resolvedItemsOfQuestionText = [];
+    
+    imageBasedQuestion.shuffle(Random(10000));
+  
+    int amountofimagerequiredbyPerencent = ((30 * tottlaAmountquestionAvailable) / 100).floor(); // this 30% length of the question so loop until u have this amount of question 
+    while(resolvedItemsOfQuestionImage.length != amountofimagerequiredbyPerencent ){
+     
+        if(resolvedItemsOfQuestionImage.length >= 15){
+            break;
+        }
+        int rd = Random().nextInt(imageBasedQuestion.length);
+        Question obj =  imageBasedQuestion [rd] ;
+        
+        if(!(resolvedItemsOfQuestionImage.contains(obj))){
+            resolvedItemsOfQuestionImage.add( obj ); // this will basically generates random number upto max of the list image based and will continue doing this until the new list holds the so called the 30 percenand finally adds them to the new lsit
+        }
+      }
+
+
+    textBasedQuestion.shuffle(Random(10000));
+
+    int amountoftextrequiredbyPerencent = ((70 * tottlaAmountquestionAvailable) / 100).floor(); // this 70% length of the question so loop until u have this amount of question  50 = 100 
+    while(resolvedItemsOfQuestionText.length != amountoftextrequiredbyPerencent ){
+      if(resolvedItemsOfQuestionText.length >= 35){
+        break;
+      }
+      int rd = Random().nextInt(textBasedQuestion.length);
+      Question obj =  textBasedQuestion[rd];
+      if (!(resolvedItemsOfQuestionText.contains(obj))){
+          resolvedItemsOfQuestionText.add(obj);
+      }
+      
+    }
+
+
+    
+    randomeListOfQuestion.addAll(resolvedItemsOfQuestionImage);
+    randomeListOfQuestion.addAll(resolvedItemsOfQuestionText);
+
+    randomeListOfQuestion.shuffle();
+   
+
+    return randomeListOfQuestion;
+  }
+
+
+
+  
 	List questionAndTypeHandler(){
 			
 			List allthequestionKeys = [];
@@ -150,21 +248,23 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
                       backgroundColor: MaterialStateProperty.all(Colors.green),
                     ),
                     onPressed: () {
-						if(flag_for_page.toString().trim() == "1"){ // 
-							Navigator.of(context).pushReplacement(
-								MaterialPageRoute(builder: (ctx) {
-									return StudentMainLandingPageWidget(object);
-								}),
-							);
-						}else if(flag_for_page.toString().trim() == "2"){ // mock exam taking
-								Navigator.of(context).pushReplacement(
-									MaterialPageRoute(builder: (ctx) {
-										return StudentMainLandingPageWidget(object);
-									}),
-								);
-						}else{
-							// for another page the codes goes down here
-						}	
+                        
+                      
+                        if(flag_for_page.toString().trim() == "1"){ // 
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) {
+                              return StudentMainLandingPageWidget(object);
+                            }),
+                          );
+                        }else if(flag_for_page.toString().trim() == "2"){ // mock exam taking
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (ctx) {
+                                return StudentMainLandingPageWidget(object);
+                              }),
+                            );
+                        }else{
+                          // for another page the codes goes down here
+                          }	
 							
                     },
                     icon: const Icon(Icons.backspace_rounded),
@@ -228,12 +328,23 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '8');	;
-																				}),
-																			);
-																			
+                                        if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('8')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '8', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '8');
+                                                }),
+																			      );
+                                         }  
 																		}
 																
 																	}, 
@@ -264,11 +375,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																				Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '9');	;
-																				}),
-																			);
+																				if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('9')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '9', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '9');
+                                                }),
+																			      );
+                                         }
 																		}
 
 																	}, 
@@ -299,11 +423,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '5');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('5')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '5', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '5');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('ደረቅ 1', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -343,11 +480,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '6');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('6')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '6', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '6');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('ደረቅ 2', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -377,11 +527,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '7');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('7')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '7', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '7');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('ደረቅ 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -411,11 +574,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '3');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('3')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '3', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '3');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('ታክሲ 1', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),		
@@ -455,11 +631,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '4');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('4')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '4', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '4');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('ታክሲ 2', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -489,11 +678,24 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '2');	;
-																				}),
-																			);
+																			if (flag_for_page.toString().trim()  == "2"){
+                                            List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('2')) ;
+                                            if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '2', randomizedQuestionsList);
+                                                      }),);
+                                            }else{
+                                                  openDialog();
+                                            }
+
+                                        }else{
+                                          	Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '2');
+                                                }),
+																			      );
+                                         }
 																		}
 																	}, 
 																	child:Text('አዉቶሞቢል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -523,11 +725,26 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																		if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
 																		}else{
-																			Navigator.of(context).pushReplacement(
-																				MaterialPageRoute(builder: (ctx) {
-																					return QuestionListDisplayPageWidget(flag_for_page, object, '1');	;
-																				}),
-																			);
+														
+                                            if (flag_for_page.toString().trim()  == "2"){
+                                              List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('1')) ;
+                                              if(randomizedQuestionsList.isNotEmpty){
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                          return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '1', randomizedQuestionsList);
+                                                      }),);
+                                              }else{
+                                                  openDialog();
+                                              }
+
+                                            }else{
+                                          	  Navigator.of(context).pushReplacement(
+																			        	MaterialPageRoute(builder: (ctx) { 
+                                                    return QuestionListDisplayPageWidget(flag_for_page.toString().trim() , object, '1');
+                                                }),
+																			      );
+                                         } 
+		
 																		}
 																	}, 
 																	child:Text('ሞተርሳይክል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
