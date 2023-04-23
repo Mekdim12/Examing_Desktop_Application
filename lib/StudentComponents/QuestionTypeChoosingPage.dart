@@ -1,12 +1,7 @@
 import 'dart:math';
-
 import 'package:diving_licence_traning_center_student/StudentComponents/StudentMainLandingPage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
-import '../Components/privillageChoosingPage.dart';
-import '../Components/adminLandingPage.dart';
-import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
@@ -166,7 +161,10 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 
     randomeListOfQuestion.shuffle();
    
-
+    if(randomeListOfQuestion.length > 50){
+        randomeListOfQuestion = randomeListOfQuestion.sublist(0, 50);
+        randomeListOfQuestion.shuffle();
+    }
     return randomeListOfQuestion;
   }
 
