@@ -111,7 +111,74 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                               ),
                               elevation: 20,
                               shadowColor: const Color.fromRGBO(255, 239, 186, 1),
-                              child:Text("ddd")
+                              child:Container(
+                                margin: EdgeInsets.symmetric(vertical: 100),
+                                child:Row(mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(children: [
+
+                                    Container(
+                                      margin: EdgeInsets.symmetric(vertical: 10),
+                                      width: 700,
+                                      height: 50,
+                                      child: Row(children: [
+                                        Text('ጠቅላላ የተሰጠው ጥያቄ ብዛት ፡ ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline),),
+                                        Container(margin: EdgeInsets.symmetric(horizontal: 8),),
+                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),),
+                                        
+                                      ]),
+                                       ),
+                                     Container(
+                                       margin: EdgeInsets.symmetric(vertical: 10),
+                                     
+                                      width: 700,
+                                      height: 50,
+                                       child: Row(children: [
+                                        Text('በትክክል የተመለሱ ጥያቄ ብዛት ፡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline, color: Color.fromARGB(255, 49, 113, 51)),),
+                                        Container(margin: EdgeInsets.symmetric(horizontal: 8),),
+                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.green),),
+                                        
+                                      ]),
+                                      
+                                    ),
+                                     Container(
+                                       margin: EdgeInsets.symmetric(vertical: 10),
+                                      width: 700,
+                                      height: 50,
+                                     
+                                      child: Row(children: [
+                                        Text('በትክክል ያልተመለሱ ጥያቄ ብዛት ፡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline, color: Color.fromARGB(255, 170, 50, 42)),),
+                                        Container(margin: EdgeInsets.symmetric(horizontal: 8),),
+                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.red),),
+                                        
+                                      ]),
+                                    
+                                    ),
+                                     Container(
+                                       margin: EdgeInsets.symmetric(vertical: 50),
+                                     
+                                      width: 700,
+                                      height: 50,
+                                      child: Center(child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Icon(Icons.gpp_good_rounded, color: Colors.green, size: 40,),
+                                          Container(margin: EdgeInsets.symmetric(horizontal: 5),),
+                                          Text('አልፈዋል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, decoration: TextDecoration.underline),)
+                                        ],
+                                      ) 
+                                      ,),
+                                    
+                                     
+                                      
+                                    ),
+                                    
+                                    
+                                   
+                                  ],)
+                                ],),
+                              )
                               ) ) ] ) ) );
   }
 }
