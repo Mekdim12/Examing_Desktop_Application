@@ -85,7 +85,7 @@ class StudentFavoriteDetailPageState extends State<StudentFavoriteDetailPageWidg
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text(
-                      "Back",
+                      "ወደ ኋላ ተመለስ",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     )),

@@ -64,7 +64,7 @@ class StudentFavoriteFirstPageState extends State<StudentFavoriteFirstPageWidget
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text(
-                      "Back",
+                      "ወድ ኋላ ተመለስ",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     )),
@@ -80,7 +80,7 @@ class StudentFavoriteFirstPageState extends State<StudentFavoriteFirstPageWidget
 										Container(
 											margin: EdgeInsets.symmetric(vertical: 50),
 											child: const Text(
-												"Favorite Questions",
+												"የተመረጡ ጥያቄውች ዝርዝር",
 												style: TextStyle(
 														fontFamily: 'quickSand',
 														decoration: TextDecoration.underline,

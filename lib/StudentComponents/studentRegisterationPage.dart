@@ -139,7 +139,7 @@ Future openDialog(bool good_or_bad) => showDialog(
                     },
                     icon: const Icon(Icons.backspace_rounded),
                     label: const Text(
-                      "Back",
+                      "ወደ ኋላ ተመለስ",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     )),

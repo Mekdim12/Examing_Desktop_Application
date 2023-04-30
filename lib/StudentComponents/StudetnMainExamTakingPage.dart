@@ -18,7 +18,7 @@ bool is_c_choosed = false;
 bool is_d_choosed = false;
 bool buttons_locked = false;
 Timer? countdownTimer;
-Duration myDuration = Duration(minutes: 1);
+Duration myDuration = Duration(minutes: 50);
 bool is_time_is_goingto_up = false;
 List s = [];
 
@@ -48,7 +48,77 @@ class StudentExamTakingPageWidget extends StatefulWidget {
 
 class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
 
+    Future exitDialog(String flag_for_page ,Student object) => showDialog(
+	  context: context,
+	  barrierDismissible: false,
+	  builder: (context) => AlertDialog(
+			actionsAlignment: MainAxisAlignment.center,
+			buttonPadding: const EdgeInsets.all(5),
+			contentPadding: const EdgeInsets.all(15),
+			title: const Text("ፈተናው ዝጋ"),
+			elevation: 8,
+			icon: const Icon(
+			  Icons.gpp_bad,
+			  weight: 50,
+			  size: 50,
+			),
+			iconColor: Colors.redAccent,
+			// backgroundColor: Color.fromARGB(225, 241, 237, 237),
+			contentTextStyle: const TextStyle(
+				color: Color.fromARGB(255, 25, 57, 42),
+				fontWeight: FontWeight.bold),
+			content: Container(
+			  alignment: Alignment.center,
+			  width: 150,
+			  height: 150,
+			  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+			  child: Text(
+				textAlign: TextAlign.center,
+				"የህን ማድረግ ከቀጠሉ የፈተናው ሂደት መረጃ ይጠፋል ስለዚህ ፈተናውን ማቋረጥ ይፈልጋሉ ",
+			  ),
+			),
 
+			actions: [
+			  ElevatedButton.icon(
+				  style: ButtonStyle(
+					  padding: const MaterialStatePropertyAll(
+						  EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+					  iconColor: MaterialStatePropertyAll(Colors.black),
+					  backgroundColor:
+						  MaterialStatePropertyAll(Colors.redAccent)),
+				  onPressed: () {
+            Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) {
+                    return QuestionTypeChossingPage(flag_for_page, object);
+                  }),
+                );
+				  },
+				  icon: const Icon(Icons.close),
+				  label: Text(
+					"ፈተናዉን እቋርጥ",
+					style: TextStyle(
+						color: Colors.black, fontWeight: FontWeight.bold),
+				  )),
+			  ElevatedButton.icon(
+				  style: ButtonStyle(
+					  padding: const MaterialStatePropertyAll(
+						  EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
+					  iconColor: MaterialStatePropertyAll(Colors.black),
+					  backgroundColor:
+						  MaterialStatePropertyAll(Colors.greenAccent)),
+				  onPressed: () {
+					 Navigator.of(context).pop();
+				  },
+				  icon: const Icon(Icons.close),
+				  label: Text(
+					"ወደ ጥያቄው ተመለስ",
+					style: TextStyle(
+						color: Colors.black, fontWeight: FontWeight.bold),
+				  ))
+			],
+		  ));
+
+  
     Future openDialog_for_next_button(Student object, int count_correct_ans, count_incorrect_ans) =>
       showDialog(
           context: context,
@@ -107,7 +177,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                         countInCorrectAnswered = 0;
 
                           countdownTimer!.cancel();
-                           myDuration = Duration(minutes: 1);
+                           myDuration = Duration(minutes: 50);
                           is_time_is_goingto_up = false;
                         });    
                       },
@@ -290,7 +360,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
     countInCorrectAnswered = 0;
     if(countdownTimer != null) {
         countdownTimer!.cancel();
-        myDuration = Duration(minutes: 1);
+        myDuration = Duration(minutes: 50);
     }
     super.initState();
 
@@ -338,11 +408,8 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                   MaterialStatePropertyAll(Color.fromARGB(255, 96, 125, 139)),
             ),
             onPressed: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (ctx) {
-                  return QuestionTypeChossingPage(flag_for_page, object);
-                }),
-              );
+              exitDialog(flag_for_page,object);
+              
             },
             child: Icon(
               Icons.cancel_presentation_rounded,
@@ -1384,7 +1451,7 @@ class TimeCounterState extends State<TimeCounterWidget> {
       if (this.mounted) {
         setState(() {
           countdownTimer!.cancel();
-          myDuration = Duration(minutes: 1);
+          myDuration = Duration(minutes: 50);
           is_time_is_goingto_up = false;
         });
 

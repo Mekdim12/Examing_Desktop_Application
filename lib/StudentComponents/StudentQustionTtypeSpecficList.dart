@@ -57,7 +57,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 								indicatorSize: TabBarIndicatorSize.tab,
 								tabs: [
 									Tab(
-										text: "Text Based",
+										text: "የጽሁፍ ፈተና",
 										icon: Icon(
 											
 											Icons.abc,
@@ -66,7 +66,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 										)),
 									Tab(
 										iconMargin: EdgeInsets.all(5),
-										text: "Image Based",
+										text: "የምስል ፈተና",
 										icon: Icon(
 											
 											Icons.image,
@@ -95,13 +95,13 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 										);
 									},
 									child: Text(
-									"Back",
+									"ወደ ኋላ ተመለስ",
 									style:
 										TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
 									)),
 							),
 							title: const Text(
-								'List Of Questsions Available',
+								'የፈተናዎች ዝርዝር',
 								style: TextStyle(
 										color: Colors.black,
 										fontFamily: 'quickSand',
@@ -131,7 +131,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 										Container(
 											margin: EdgeInsets.symmetric(vertical: 50),
 											child: const Text(
-												"Text Based Questions",
+												"በጽሁፍ የሚገኙ ጥያቄዎች ዝርዝር",
 												style: TextStyle(
 														fontFamily: 'quickSand',
 														decoration: TextDecoration.underline,
@@ -165,7 +165,7 @@ class _QuestionListDisplayPageState extends State<QuestionListDisplayPageWidget>
 										Container(
 											margin: EdgeInsets.symmetric(vertical: 50),
 											child: const Text(
-												"Image Based Questions",
+												"በምስል የሚገኙ ጥያቄዎች ዝርዝር",
 												style: TextStyle(
 													fontFamily: 'quickSand',
 														decoration: TextDecoration.underline,

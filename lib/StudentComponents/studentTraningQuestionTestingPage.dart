@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pie_chart/pie_chart.dart';
 import './sideBarDrawer.dart';
 import '../Models/QuestionModel.dart';
-import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
-import '../Models/QuestionModel.dart';
-import '../Models/QuestionTypeModel.dart';
-import './QuestionTypeChoosingPage.dart';
-import './studentTraningQuestionTestingPage.dart';
 import 'package:hive/hive.dart';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../Models/QuestionModel.dart';
-import '../Models/QuestionTypeModel.dart';
-import 'package:hive/hive.dart';
-import './studentLoginPage.dart';
-import '../Models/StudentModels.dart';
-import '../Models/QuestionModel.dart';
-import '../Models/QuestionTypeModel.dart';
-import './QuestionTypeChoosingPage.dart';
-import './studentTraningQuestionTestingPage.dart';
 import 'StudentQustionTtypeSpecficList.dart';
 import '../Models/StudentFavoriteModel.dart';
 
@@ -35,7 +19,7 @@ final dbstudentfav = StudentFavoriteTypeBox.getAllTheStudentFav();
 // Future<int> obj = db.add(question_object);
 
 Timer? countdownTimer;
-Duration myDuration = Duration(seconds: 25);
+Duration myDuration = Duration(minutes: 25);
 bool is_time_is_goingto_up = false;
 
 class StudentQuestionTypeSpecificTestingPageWidget extends StatefulWidget {
@@ -114,7 +98,7 @@ class StudentQuestionTypeSpecificTestingPageState
 							items[0], items[1], items[2], items[3]);
 						setState(() {
 						  countdownTimer!.cancel();
-						  myDuration = Duration(seconds: 25);
+						  myDuration = Duration(minutes: 2);
 						  is_time_is_goingto_up = false;
 						});
 
@@ -186,7 +170,7 @@ class StudentQuestionTypeSpecificTestingPageState
 				object, flag_for_page, questionType, questionIndex);
 			setState(() {
 			  countdownTimer!.cancel();
-			  myDuration = Duration(seconds: 25);
+			  myDuration = Duration(minutes: 2);
 			  is_time_is_goingto_up = false;
 			});
 		  }
@@ -1185,7 +1169,7 @@ class TimeCounterState extends State<TimeCounterWidget> {
 	  if (this.mounted) {
 		setState(() {
 		  countdownTimer!.cancel();
-		  myDuration = Duration(seconds: 25);
+		  myDuration = Duration(minutes: 25);
 		  is_time_is_goingto_up = false;
 		});
 

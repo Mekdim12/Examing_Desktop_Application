@@ -96,7 +96,7 @@ class StudentLoginPageState extends State<StudentLoginPageWidget> {
                     },
                     icon: const Icon(Icons.backspace_rounded),
                     label: const Text(
-                      "Back",
+                      "ወደ ኋላ ተመለስ",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     )),
