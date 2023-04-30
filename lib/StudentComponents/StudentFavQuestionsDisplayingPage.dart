@@ -15,6 +15,7 @@ import 'dart:io';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import './studentTraningQuestionTestingPage.dart';
+import 'StudentFavQuestionDetailViewPage.dart';
 
 class StudentFavoriteFirstPageWidget extends StatefulWidget {
    StudentFavoriteFirstPageWidget(this.studentObject);
@@ -191,49 +192,18 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
                 // this means the question is avail still
                 QuestionsList.forEach((keys, values) {
                     if(keys.toString() == value.studentFav.values.first.toString()){
-                        // StudentFavorite.add(values[keys]); 
+                         
                         StudentFavorite.add(values);
-                        // print(values);
+                        
                       }
                 }); 
-              //  StudentFavorite.add(QuestionsList);
             }
 
         }
     });
-    
-   
-   
-
-	// List<QuestionTypeModel> tempvalue = [];
-  //   Box<QuestionTypeModel> dbs = QuestionTypeBox.getAllTheQuestionsTypes();
-
-  //   dbs.toMap().forEach((key, value) {
-  //     if (value.question_type_items.values.toList()[0].toString() == questionType){
-		
-  //         if( tempListOfQuestionkeys.contains(value.question_type_items.keys.toList()[0].toString())){
-  //            tempvalue.add(value);
-  //         }
-         
-  //       }
-  //   });
 
 	List<Question> value = StudentFavorite;
-	// Questions.forEach((val) {	
-	// 	tempvalue.forEach((element) {
-	// 		if(element.question_type_items.keys.toList()[0].toString() == val.key.toString()){
-	// 			if(currentState.toString() == val.exam_type.toString()){
-	// 				value.add(val);
-	// 			}
-				
-	// 		}	
-	// 	});		
-	// });
 
-// print("------------------------------------------------------------xxxxxxxxxxxxxxxxxxxxx");
-// print(tempvalue);
-// print(value);
-// print(Questions);
 		
 		if(value.length <=  0){
 			return Center(
@@ -264,11 +234,11 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 									itemCount: value.length,
 									itemBuilder: (context, int index) => InkWell(
 										onTap: () {
-											// Navigator.of(context).push(
-											// 	MaterialPageRoute(builder: (ctx) {
-											// 		return StudentQuestionTypeSpecificTestingPageWidget(studentObject, flag_for_page, questionType, value[index].key);
-											// 	}),
-											// );
+											Navigator.of(context).push(
+												MaterialPageRoute(builder: (ctx) {
+													return StudentFavoriteDetailPageWidget(studentObject,  value[index]);
+												}),
+											);
 										},
 										onHover: (val) {
 											indexOfHovered = index;
