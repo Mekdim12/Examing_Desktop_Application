@@ -6,6 +6,7 @@ import '../Components/adminLandingPage.dart';
 import './QuestionTypeChoosingPage.dart';
 import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
+import 'StudentFavQuestionsDisplayingPage.dart';
 
 class StudentMainLandingPageWidget extends StatefulWidget {
    StudentMainLandingPageWidget(this.studentObject);
@@ -18,44 +19,101 @@ class StudentMainLandingPageWidget extends StatefulWidget {
 }
 
 class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
-  Future openDialog(bool good_or_bad) => showDialog(
+  Future openDialog() => showDialog(
       barrierDismissible: true,
       context: context,
       builder: (context) => AlertDialog(
             actionsAlignment: MainAxisAlignment.center,
             buttonPadding: const EdgeInsets.all(5),
             contentPadding: const EdgeInsets.all(15),
-            title: (good_or_bad)
-                ? const Text("Successfully Registered")
-                : const Text("Not Registered"),
+            title:Container(
+                        // width: 50,
+                        height: 270,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          image: DecorationImage(
+                    
+                            fit: BoxFit.fitWidth,
+                            image: AssetImage('assets/images/mainBackground.jpg'),
+                            ),
+                        )
+                      ),
             elevation: 8,
-            icon: (good_or_bad)
-                ? const Icon(
-                    Icons.gpp_good,
-                    weight: 50,
-                    size: 50,
-                  )
-                : const Icon(
-                    Icons.gpp_bad,
-                    weight: 50,
-                    size: 50,
-                  ),
-            iconColor: (good_or_bad) ? Colors.greenAccent : Colors.redAccent,
+            
             // backgroundColor: Color.fromARGB(225, 241, 237, 237),
             contentTextStyle: const TextStyle(
                 color: Color.fromARGB(255, 25, 57, 42),
                 fontWeight: FontWeight.bold),
             content: Container(
               alignment: Alignment.center,
-              width: 150,
-              height: 150,
+              width: 600,
+              height: 350,
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-              child: Text(
-                textAlign: TextAlign.center,
-                (good_or_bad)
-                    ? "You Have Success-fully Registred to the database now try login with these credentials"
-                    : "The Operation Failed and The Data You Entered Is Not Inserted On The Database maybe try to correct your input entries mainly empty field insertion is not allowed and make sure the two passwords needs to be identical or maybe this id is already registred try contacting the admin",
-              ),
+              child:Container(
+                child: Column(
+                  children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [Text("Software Developer : "),Text("መቅድም ታምራት", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black54),)],
+                            ),
+
+
+                            Container(
+                              margin: EdgeInsets.all(15),
+                            child: Row(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("ለማንኛው ከሶፍትዌር ጋር የተያያዙ ስራዎች እንደሁም ማማክርን ጨምሮ የስልክ አፕልኬሽን፣\n ዊብሳይቶች፣ ቦት፣ ሶፍትዌሮች ከማማክር ጋር በተመጣጣኝ ዋጋ እንሰራለን።ለድርጅቶ ለሚያስፈልጉ\n ማንኛውም ሶፍትዌርች መስራት ማማከር አንዲሁም እጫጭር ስልጠና መሰጠት እንሰራለን። \nለተማሪዎች የፕሮግራሚንግ ስልጠና መስጠት አንዲሁም የማስተርስን ጨምሮ ፕሮጀክቶችን \nመስራት ለተጨማራ ጥያቄ በሚክተሉት እድራሻዎች ያግኙን ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, ),textAlign: TextAlign.justify,)],
+                            ),),
+
+                            Row(
+                              children: [
+                                Container(margin: EdgeInsets.only(left: 50, top: 15, bottom: 5),),
+                                ImageIcon(AssetImage('assets/images/mainBackground.jpg')),
+                                Container(margin: EdgeInsets.symmetric(horizontal: 10),),
+                                Text("ሰልክ ቁጥር፡ 0924041650")
+
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(margin: EdgeInsets.only(left: 50, top: 15, bottom: 5),),
+                                ImageIcon(AssetImage('assets/images/mainBackground.jpg')),
+                                Container(margin: EdgeInsets.symmetric(horizontal: 10),),
+                                Text("Instaram: @mekdim_tam")
+
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(margin: EdgeInsets.only(left: 50, top: 15, bottom: 5),),
+                                ImageIcon(AssetImage('assets/images/mainBackground.jpg')),
+                                Container(margin: EdgeInsets.symmetric(horizontal: 10),),
+                                Text("telegram: @mekdim_tamirat")
+
+                              ],
+                            ),
+                          Row(
+                              children: [
+                                Container(margin: EdgeInsets.only(left: 50, top: 15, bottom: 5),),
+                                ImageIcon(AssetImage('assets/images/mainBackground.jpg')),
+                                Container(margin: EdgeInsets.symmetric(horizontal: 10),),
+                                Text("facebook: mekdim_tam")
+
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(margin: EdgeInsets.only(left: 50, top: 15, bottom: 5),),
+                                ImageIcon(AssetImage('assets/images/mainBackground.jpg')),
+                                Container(margin: EdgeInsets.symmetric(horizontal: 10),),
+                                Text("linkdin: mekdim_tamirat")
+
+                              ],
+                            )
+                  ],
+                ),
+              )
             ),
 
             actions: [
@@ -64,24 +122,14 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                       padding: const MaterialStatePropertyAll(
                           EdgeInsets.symmetric(vertical: 18, horizontal: 20)),
                       iconColor: const MaterialStatePropertyAll(Colors.black),
-                      backgroundColor: MaterialStatePropertyAll((good_or_bad)
-                          ? Colors.greenAccent
-                          : Colors.redAccent)),
+                      backgroundColor: MaterialStatePropertyAll(Colors.redAccent)),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    (good_or_bad)
-                        ? Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) {
-                              return StudentLoginPageWidget();
-                            }),
-                          )
-                        : null;
+                   
                   },
                   icon: const Icon(Icons.close),
                   label: Text(
-                    (good_or_bad)
-                        ? "Close & go to Login page"
-                        : "Close and re-try",
+                    "ተመለስ",
                     style: const TextStyle(
                       color: Colors.black,
                     ),
@@ -262,7 +310,14 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               height: 60,
                                                 margin: EdgeInsets.only(left: 25),
                                               child:ElevatedButton(
-                                                onPressed: (){},
+                                                onPressed: (){
+                                                  Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                      return StudentFavoriteFirstPageWidget(object);
+                                                    }),
+                                                  );
+                                                  
+                                                },
                                                 child: Text("የተቀመጡ ጥያቄዎች", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )
@@ -300,7 +355,9 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               height: 60,
                                               margin: EdgeInsets.only(left: 25),
                                               child:ElevatedButton(
-                                                onPressed: (){},
+                                                onPressed: (){
+                                                  openDialog();
+                                                },
                                                 child: Text("ሰለ ሶፍትዌሩ ", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )

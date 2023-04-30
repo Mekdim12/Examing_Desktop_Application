@@ -74,6 +74,7 @@ flutter:
     - assets/images/backgroundEntrance.jpg
     - assets/images/entranceImageLogo.jpg
     - assets/images/texturebackground.jpg
+    - assets/images/mainBackground.jpg
     - .env
 
   #   - images/a_dot_ham.jpeg

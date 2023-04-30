@@ -193,6 +193,7 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 	}
 
 	List specificQuestionTypeRetriver(String current_type, List resolved_questiontypes){
+    print(current_type);
 		List resolved_items = [];
 		for(var questiontype in resolved_questiontypes){
 			String questionId = questiontype.question_type_items.keys.toList()[0].toString();
@@ -626,9 +627,9 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 																	style: ButtonStyle(backgroundColor:MaterialStateProperty.all( Colors.green),),
 																	onPressed: (){
 																		List currenSelectedtypequestions = specificQuestionTypeRetriver('4',resolved_questions);
-																		if(currenSelectedtypequestions.isEmpty){
+                                    if(currenSelectedtypequestions.isEmpty){
 																			openDialog();
-																		}else{
+                                     	}else{
 																			if (flag_for_page.toString().trim()  == "2"){
                                             List randomizedQuestionsList = randomizeTheList(allinformationAboutQuestionCollector('4')) ;
                                             if(randomizedQuestionsList.isNotEmpty){
@@ -637,7 +638,7 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
                                                           return StudentExamTakingPageWidget(object, flag_for_page.toString().trim() , '4', randomizedQuestionsList);
                                                       }),);
                                             }else{
-                                                  openDialog();
+                                              openDialog();
                                             }
 
                                         }else{
