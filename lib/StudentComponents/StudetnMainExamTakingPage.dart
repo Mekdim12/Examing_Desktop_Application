@@ -97,7 +97,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                    
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (ctx) {
-                            return StudentFinalResultView(object,resolvedListOfQuestions.length,count_correct_ans, count_incorrect_ans);
+                            return StudentFinalResultView(object,resolvedListOfQuestions.length,count_correct_ans, count_incorrect_ans, true);
                           }),
                         );
 
@@ -145,7 +145,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                       ),
                 iconColor:
                     (good_or_bad) ? Colors.greenAccent : Colors.redAccent,
-                // backgroundColor: Color.fromARGB(225, 241, 237, 237),
+                
                 contentTextStyle: const TextStyle(
                     color: Color.fromARGB(255, 25, 57, 42),
                     fontWeight: FontWeight.bold),
@@ -1209,6 +1209,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                                             decoration: BoxDecoration(
                                               border: Border.all(),
                                               shape: BoxShape.circle,
+                                              image: DecorationImage(image:  AssetImage('assets/images/stud48.png'))
                                               // image: DecorationImage(image:  NetworkImage('https://img.icons8.com/fluency/96/null/person-male.png'))
                                             ),
                                           ),
@@ -1310,7 +1311,7 @@ class TimeCounterState extends State<TimeCounterWidget> {
     super.dispose();
   }
 
-  Future openDialog() => showDialog(
+  Future openDialog(Student studentOject, ) => showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
@@ -1349,14 +1350,11 @@ class TimeCounterState extends State<TimeCounterWidget> {
                       backgroundColor:
                           MaterialStatePropertyAll(Colors.greenAccent)),
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (ctx) {
-                        return QuestionListDisplayPageWidget(
-                            widget.flag_for_page,
-                            widget.studentObject,
-                            widget.questionType);
-                      }),
-                    );
+                     Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (ctx) {
+                            return StudentFinalResultView(studentOject ,resolvedListOfQuestions.length, countCorrectAnswered, countInCorrectAnswered, false);
+                          }),
+                        );
                   },
                   icon: const Icon(Icons.close),
                   label: Text(
@@ -1373,8 +1371,9 @@ class TimeCounterState extends State<TimeCounterWidget> {
 
     final minutes = strDigits(myDuration.inMinutes.remainder(60));
     final seconds = strDigits(myDuration.inSeconds.remainder(60));
+    
    
-
+    Student studentObject = widget.studentObject;
 
     if ((int.parse(minutes.trim()) == 0 && int.parse(seconds.trim()) <= 30)) {
       is_time_is_goingto_up = true;
@@ -1393,7 +1392,7 @@ class TimeCounterState extends State<TimeCounterWidget> {
           // WidgetsBinding.instance.addPersistentFrameCallback((x) {
 
           Future.delayed(Duration.zero, () {
-            openDialog();
+            openDialog(studentObject);
           });
           // });
         }

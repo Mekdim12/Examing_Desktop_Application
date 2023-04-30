@@ -193,8 +193,7 @@ class QuestionChosingPageState extends State<QuestionTypeChossingPage> {
 	}
 
 	List specificQuestionTypeRetriver(String current_type, List resolved_questiontypes){
-    print(current_type);
-		List resolved_items = [];
+   List resolved_items = [];
 		for(var questiontype in resolved_questiontypes){
 			String questionId = questiontype.question_type_items.keys.toList()[0].toString();
 			String questionType = questiontype.question_type_items.values.toList()[0].toString();

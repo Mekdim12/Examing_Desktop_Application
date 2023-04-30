@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../Models/ScoreModel.dart';
 import '../Models/StudentModels.dart';
 import 'StudentMainLandingPage.dart';
 
@@ -6,11 +8,12 @@ import 'StudentMainLandingPage.dart';
 class StudentFinalResultView extends StatefulWidget {
 	
 
-   StudentFinalResultView(this.studentObject , this.tottalQuestion, this.correctAnswer, this.incorrectAnswer);
+   StudentFinalResultView(this.studentObject , this.tottalQuestion, this.correctAnswer, this.incorrectAnswer, this.isFinished);
    int tottalQuestion;
    int correctAnswer;
    int incorrectAnswer;
    Student studentObject; 
+   bool isFinished;
 
   @override
   State<StudentFinalResultView> createState() =>
@@ -78,6 +81,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
     int correctAnswer = widget.correctAnswer;
     int incorrectAnswer = widget.incorrectAnswer; 
     Student studentObject = widget.studentObject;
+    bool isFinished = widget.isFinished;
 
 
     int averageQuestion =( double.parse( ((tottalQuestion * 2 ) * ( 75/100)).toString())).toInt();
@@ -114,7 +118,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                           ),
                           Container(
                             width: 1000,
-                            height: 600,
+                            height: 640,
                             child: Card(
                               color:const Color.fromRGBO(255, 239, 186, 0.405),
                               shape: RoundedRectangleBorder(
@@ -127,6 +131,16 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                                 child:Row(mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Column(children: [
+                                    
+                                    Container(
+                                      margin: EdgeInsets.symmetric(vertical: 10),
+                                      width: 700,
+                                     
+                                      child: Row(children: [
+                                        Text( (isFinished)?'ሰዐት በተገቢ ሁኔታ ተጠቅመዋል ':'የተሰጠውን ጥያቄዎች በተሰጠው ሰአት መጨረስ አልቻሉም', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blueGrey),),
+                                        
+                                      ]),
+                                       ),
 
                                     Container(
                                       margin: EdgeInsets.symmetric(vertical: 10),
@@ -198,8 +212,14 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                         height: 50,
                         child: ElevatedButton(
                           style: ButtonStyle(  backgroundColor: MaterialStatePropertyAll(Colors.blueGrey,),),
-                          onPressed: (){
-                          
+                          onPressed: () async{
+                       
+                            DateTime now = new DateTime.now();
+                            DateTime date = new DateTime(now.year, now.month, now.day);
+                            Box<StudentScoreModel> scoreModel= StudentScoreBox.getAllStudentsScore();
+                            StudentScoreModel model = StudentScoreModel({studentObject.id_number.toString() : [date, tottalQuestion , correctAnswer, incorrectAnswer, checkerifPassedOrFailed, isFinished]});
+                            await scoreModel.add(model);
+
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(builder: (ctx) {
                                 return StudentMainLandingPageWidget(studentObject);

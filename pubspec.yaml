@@ -43,6 +43,7 @@ dependencies:
   file_picker: ^5.2.5
   async_foreach: ^0.0.5+4
   shared_preferences: ^2.0.20
+  desktop_window: ^0.4.0
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,8 @@ flutter:
     - assets/images/entranceImageLogo.jpg
     - assets/images/texturebackground.jpg
     - assets/images/mainBackground.jpg
+    - assets/images/stud48.png
+    - assets/images/stud96.png
     - .env
 
   #   - images/a_dot_ham.jpeg

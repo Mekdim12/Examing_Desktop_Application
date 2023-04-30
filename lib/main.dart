@@ -8,8 +8,25 @@ import './Models/QuestionModel.dart';
 import './Models/StudentModels.dart';
 import './Models/QuestionTypeModel.dart';
 import './Models/StudentFavoriteModel.dart';
+import './Models/ScoreModel.dart';
+import 'package:desktop_window/desktop_window.dart';
+/*
 
 
+Size size = await DesktopWindow.getWindowSize();
+    print(size);
+    await DesktopWindow.setWindowSize(Size(500,500));
+
+    await DesktopWindow.setMinWindowSize(Size(400,400));
+    await DesktopWindow.setMaxWindowSize(Size(800,800));
+
+    await DesktopWindow.resetMaxWindowSize();
+    await DesktopWindow.toggleFullScreen();
+    bool isFullScreen = await DesktopWindow.getFullScreen();
+    await DesktopWindow.setFullScreen(true);
+    await DesktopWindow.setFullScreen(false);
+    
+     */
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +36,8 @@ Future<void> main() async {
   Hive.registerAdapter(StudentAdapter());
   Hive.registerAdapter(QuestionTypeModelAdapter());
   Hive.registerAdapter(StudentFavoriteTypeModelAdapter());
+  Hive.registerAdapter(StudentScoreModelAdapter());
+
 
 
   // creating Question Information Box For Holding All The Questions
@@ -31,6 +50,8 @@ Future<void> main() async {
   Box studentInformationBox = await Hive.openBox<Student>('StudentInformationMain');
   Box questionTypeBox = await Hive.openBox<QuestionTypeModel>('QuestionTypeMain');
   Box studentFav = await Hive.openBox<StudentFavoriteTypeModel>('StudentFavMain');
+  Box studentScore = await Hive.openBox<StudentScoreModel>('StudentScoreMain');
+  
   
 
   if ( !firstTime) {
@@ -45,6 +66,7 @@ Future<void> main() async {
       studentInformationBox = await Hive.openBox<Student>('StudentInformationMain');
       questionTypeBox = await Hive.openBox<QuestionTypeModel>('QuestionTypeMain');
       studentFav = await Hive.openBox<StudentFavoriteTypeModel>('StudentFavMain');
+      studentScore = await Hive.openBox<StudentScoreModel>('StudentScoreMain');
   
       var CWD = Hive.box('CurrenWorkingDirectory');
       await CWD.put('cwd', null);

@@ -988,7 +988,8 @@ class StudentQuestionTypeSpecificTestingPageState
 											decoration: BoxDecoration(
 											  border: Border.all(),
 											  shape: BoxShape.circle,
-											  // image: DecorationImage(image:  NetworkImage('https://img.icons8.com/fluency/96/null/person-male.png'))
+                        // image: AssetImage('assets/images/texturebackground.jpg')
+											  image: DecorationImage(image:  AssetImage('assets/images/stud48.png'))
 											),
 										  ),
 										  Container(
