@@ -10,6 +10,8 @@ import 'dart:math';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'Admin_login_page.dart';
+
 class ImageBasedQuesionInsertingPageWidget extends StatefulWidget {
   const ImageBasedQuesionInsertingPageWidget({super.key});
 
@@ -327,7 +329,13 @@ class _ImageBasedQuesionInsertingPageState
             Container(
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                },
                 icon: const Icon(Icons.logout),
                 iconSize: 35,
               ),

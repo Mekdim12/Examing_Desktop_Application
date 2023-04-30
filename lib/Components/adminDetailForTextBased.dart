@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../Models/QuestionModel.dart';
 import 'package:hive/hive.dart';
 import './adminManageQuestions.dart';
+import 'Admin_login_page.dart';
 
 class DetailAdminWidget extends StatefulWidget {
   final int keyOfQuestionFromdatabase;
@@ -65,7 +66,13 @@ class _DetailAdminWidgetState extends State<DetailAdminWidget> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                },
                 icon: const Icon(Icons.logout),
                 iconSize: 35,
               ),

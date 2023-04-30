@@ -145,29 +145,7 @@ class _SidebarDrawerState extends State<SidebarDrawerWidget> {
                               fontWeight: FontWeight.bold),
                         )),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.person),
-                    horizontalTitleGap: 1,
-                    title: TextButton(
-                        style: (currentChoosenPage == 3)
-                            ? const ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Color.fromARGB(255, 207, 158, 215)),
-                                padding: MaterialStatePropertyAll(
-                                    EdgeInsets.all(25)),
-                                alignment: Alignment.centerLeft)
-                            : const ButtonStyle(
-                                padding: MaterialStatePropertyAll(
-                                    EdgeInsets.all(25)),
-                                alignment: Alignment.centerLeft),
-                        onPressed: () {},
-                        child: const Text(
-                          'Manage Students',
-                          style: TextStyle(
-                              color: Color.fromARGB(222, 29, 29, 29),
-                              fontWeight: FontWeight.bold),
-                        )),
-                  ),
+                  
                 ],
               ),
             )

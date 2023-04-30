@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:pie_chart/pie_chart.dart';
+import '../Models/ScoreModel.dart';
+import '../Models/StudentModels.dart';
 import './sideBarDrawer.dart';
 import '../Models/QuestionModel.dart';
+import 'Admin_login_page.dart';
 class AdminLandingPageWidget extends StatefulWidget {
   const AdminLandingPageWidget({super.key});
 
@@ -10,11 +14,7 @@ class AdminLandingPageWidget extends StatefulWidget {
 }
 
 class AdminLandingPageState extends State<AdminLandingPageWidget> {
-  Map<String, double> exampValues = {
-    "Failed Exams": 15,
-    "Passed Exams": 45,
-    "Not Finished Exams": 18.4
-  };
+  
   List<Color> listoFColor = [
     const Color(0xFFEC6B56),
     const Color(0xFF47B39C),
@@ -23,6 +23,37 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    int totalStuentCount = StudentBox.getAllTheStudentsInfo().length;
+    
+    Box<StudentScoreModel> studScore = StudentScoreBox.getAllStudentsScore();
+    int totalExamCount = studScore.length;
+
+    int failedExam = 0;
+    int passedExam = 0;
+    int notFinishedExam = 0;
+
+    StudentScoreBox.getAllStudentsScore().toMap().forEach((key,value){
+        // List s = value.studentScore.values.first;
+        if(value.studentScore.values.first[5]){
+              if(value.studentScore.values.first[4]){
+                passedExam++;
+              }else{
+                failedExam++;
+              }
+        }else{
+          notFinishedExam ++;
+        }
+    });
+
+    Map<String, double> exampValues = {
+    "Failed Exams": failedExam.toDouble(),
+    "Passed Exams": passedExam.toDouble(),
+    "Not Finished Exams": notFinishedExam.toDouble()
+  };
+
+    
+
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
@@ -40,7 +71,13 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                },
                 icon: const Icon(Icons.logout),
                 iconSize: 35,
               ),
@@ -117,8 +154,8 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
                           ),
                           Container(
                               margin: const EdgeInsets.symmetric(vertical: 15)),
-                          const Text(
-                            "15654",
+                           Text(
+                            "${totalStuentCount}",
                             selectionColor: Color.fromARGB(255, 188, 243, 209),
                             style: TextStyle(
                                 letterSpacing: 5,
@@ -133,7 +170,7 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
                           Container(
                             margin: EdgeInsets.only(top: 50),
                             child: const Text(
-                              "Students",
+                              "Total Students",
                               style: TextStyle(
                                   fontFamily: 'quickSand',
                                   fontWeight: FontWeight.bold,
@@ -215,7 +252,7 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
                           Container(
                             margin: EdgeInsets.only(top: 50),
                             child: const Text(
-                              "Tottal Questions",
+                              "Total Questions",
                               style: TextStyle(
                                   fontFamily: 'quickSand',
                                   fontWeight: FontWeight.bold,
@@ -281,11 +318,10 @@ class AdminLandingPageState extends State<AdminLandingPageWidget> {
                           ),
                           Container(
                               margin: const EdgeInsets.symmetric(vertical: 15)),
-                          const Text(
-                            "15654",
+                           Text(
+                            "${totalExamCount}",
                             selectionColor: Color.fromARGB(255, 188, 243, 209),
                             style: TextStyle(
-                                letterSpacing: 5,
                                 fontFamilyFallback: ['OpenSans'],
                                 wordSpacing: 545,
                                 // color: Color.fromARGB(255, 47, 161, 51),

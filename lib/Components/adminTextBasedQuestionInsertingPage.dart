@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './adminTypeOfQuestionChossingPage.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
+import 'Admin_login_page.dart';
 class TextBasedQuestionInsertingPageWidget extends StatefulWidget {
   const TextBasedQuestionInsertingPageWidget({super.key});
 
@@ -193,7 +194,13 @@ class TextBasedQuestionInsertingPageState
             Container(
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                },
                 icon: const Icon(Icons.logout),
                 iconSize: 35,
               ),

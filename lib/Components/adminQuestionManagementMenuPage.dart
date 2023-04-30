@@ -7,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'Admin_login_page.dart';
+
 class QuestionManagementLandingPage extends StatefulWidget {
   const QuestionManagementLandingPage({super.key});
 
@@ -126,7 +128,13 @@ class _QuestionManagementLandingPageState
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                     Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                  },
                   icon: const Icon(Icons.logout),
                   iconSize: 35,
                 ),
