@@ -7,6 +7,7 @@ import './QuestionTypeChoosingPage.dart';
 import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
 import 'StudentFavQuestionsDisplayingPage.dart';
+import 'StudentScoreDisplayingPage.dart';
 
 class StudentMainLandingPageWidget extends StatefulWidget {
    StudentMainLandingPageWidget(this.studentObject);
@@ -336,7 +337,15 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                                               height: 60,
                                                 margin: EdgeInsets.only(left: 25),
                                               child:ElevatedButton(
-                                                onPressed: (){},
+                                                onPressed: (){
+                                                   Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (ctx) {
+                                                      return StudentScoreDisplayWidget(object);
+                                                    }),
+                                                  );
+
+                                                  
+                                                },
                                                 child: Text("እጠቃላይ መረጃዎች", style: TextStyle(fontFamily: 'openSans', fontWeight: FontWeight.bold,fontSize: 22,color: Colors.black),),
                                                 style: ButtonStyle(backgroundColor: MaterialStatePropertyAll( Colors.green)),
                                               )

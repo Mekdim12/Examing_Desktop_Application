@@ -11,9 +11,7 @@ import './Models/StudentFavoriteModel.dart';
 import './Models/ScoreModel.dart';
 import 'package:desktop_window/desktop_window.dart';
 /*
-
-
-Size size = await DesktopWindow.getWindowSize();
+   Size size = await DesktopWindow.getWindowSize();
     print(size);
     await DesktopWindow.setWindowSize(Size(500,500));
 
@@ -26,7 +24,7 @@ Size size = await DesktopWindow.getWindowSize();
     await DesktopWindow.setFullScreen(true);
     await DesktopWindow.setFullScreen(false);
     
-     */
+ */
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
