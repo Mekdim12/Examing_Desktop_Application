@@ -73,7 +73,8 @@ class StudentFavoriteFirstPageState extends State<StudentFavoriteFirstPageWidget
             ],
           ),
 
-      Expanded(child: 
+      Expanded(
+        child: 
           Column(
 									children: [
 										Container(
