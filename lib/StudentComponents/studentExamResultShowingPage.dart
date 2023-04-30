@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import '../Models/StudentModels.dart';
-
-
+import 'StudentMainLandingPage.dart';
 
 
 class StudentFinalResultView extends StatefulWidget {
 	
 
-   StudentFinalResultView();
-   
+   StudentFinalResultView(this.studentObject , this.tottalQuestion, this.correctAnswer, this.incorrectAnswer);
+   int tottalQuestion;
+   int correctAnswer;
+   int incorrectAnswer;
+   Student studentObject; 
 
   @override
   State<StudentFinalResultView> createState() =>
@@ -72,7 +74,16 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
     Widget build(BuildContext context) {
     
 
+    int tottalQuestion = widget.tottalQuestion;
+    int correctAnswer = widget.correctAnswer;
+    int incorrectAnswer = widget.incorrectAnswer; 
+    Student studentObject = widget.studentObject;
 
+
+    int averageQuestion =( double.parse( ((tottalQuestion * 2 ) * ( 75/100)).toString())).toInt();
+ 
+    bool checkerifPassedOrFailed = correctAnswer * 2 >= averageQuestion;
+    
 
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -124,7 +135,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                                       child: Row(children: [
                                         Text('ጠቅላላ የተሰጠው ጥያቄ ብዛት ፡ ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline),),
                                         Container(margin: EdgeInsets.symmetric(horizontal: 8),),
-                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),),
+                                        Text('${tottalQuestion}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),),
                                         
                                       ]),
                                        ),
@@ -136,7 +147,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                                        child: Row(children: [
                                         Text('በትክክል የተመለሱ ጥያቄ ብዛት ፡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline, color: Color.fromARGB(255, 49, 113, 51)),),
                                         Container(margin: EdgeInsets.symmetric(horizontal: 8),),
-                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.green),),
+                                        Text('${correctAnswer}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.green),),
                                         
                                       ]),
                                       
@@ -149,7 +160,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                                       child: Row(children: [
                                         Text('በትክክል ያልተመለሱ ጥያቄ ብዛት ፡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, decoration: TextDecoration.underline, color: Color.fromARGB(255, 170, 50, 42)),),
                                         Container(margin: EdgeInsets.symmetric(horizontal: 8),),
-                                        Text('55', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.red),),
+                                        Text('${incorrectAnswer}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28, color: Colors.red),),
                                         
                                       ]),
                                     
@@ -163,22 +174,45 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          Icon(Icons.gpp_good_rounded, color: Colors.green, size: 40,),
+                                          Icon(Icons.gpp_good_rounded, color:(checkerifPassedOrFailed)? Colors.green :Colors.redAccent, size: 40,),
                                           Container(margin: EdgeInsets.symmetric(horizontal: 5),),
-                                          Text('አልፈዋል', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, decoration: TextDecoration.underline),)
+                                          Text( (checkerifPassedOrFailed)?'አልፈዋል' : 'አላለፉም', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, decoration: TextDecoration.underline),)
                                         ],
-                                      ) 
-                                      ,),
-                                    
-                                     
-                                      
+                                      ),
                                     ),
-                                    
-                                    
-                                   
-                                  ],)
-                                ],),
+                                  ),
+                                ],)
+                                ],
+                                ),
                               )
-                              ) ) ] ) ) );
+                  ) 
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:[
+                      Container(
+                      
+                        margin: EdgeInsets.symmetric(vertical: 50),
+                        width: 150,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ButtonStyle(  backgroundColor: MaterialStatePropertyAll(Colors.blueGrey,),),
+                          onPressed: (){
+                          
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (ctx) {
+                                return StudentMainLandingPageWidget(studentObject);
+                            }),
+                        );
+                        } 
+                        , child: Text('ወደ ዋናው ገዕ')),
+                      )
+                ]
+              )
+            ]
+          )
+      )
+  );
   }
 }

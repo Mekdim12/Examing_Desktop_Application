@@ -1,22 +1,15 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:pie_chart/pie_chart.dart';
-import './sideBarDrawer.dart';
 import '../Models/QuestionModel.dart';
-import './studentLoginPage.dart';
 import '../Models/StudentModels.dart';
 import '../Models/QuestionTypeModel.dart';
 import './QuestionTypeChoosingPage.dart';
-import './studentTraningQuestionTestingPage.dart';
 import 'package:hive/hive.dart';
 import 'dart:async';
 import 'dart:io';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'StudentQustionTtypeSpecficList.dart';
 import 'dart:core';
-
 import 'studentExamResultShowingPage.dart';
 
 bool is_a_choosed = false;
@@ -46,8 +39,7 @@ class StudentExamTakingPageWidget extends StatefulWidget {
   String flag_for_page; // menu identifier
   String questionType; // 1-9 question type
   Student studentObject; // student info tracking
-  List
-      randomizedQuestionList; // list of randomize Question from all over the questoin with a given ratio
+  List randomizedQuestionList; // list of randomize Question from all over the questoin with a given ratio
 
   @override
   State<StudentExamTakingPageWidget> createState() =>
@@ -57,7 +49,7 @@ class StudentExamTakingPageWidget extends StatefulWidget {
 class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
 
 
-    Future openDialog_for_next_button(int count_correct_ans, count_incorrect_ans) =>
+    Future openDialog_for_next_button(Student object, int count_correct_ans, count_incorrect_ans) =>
       showDialog(
           context: context,
           barrierDismissible: false,
@@ -102,7 +94,13 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                                   )),
                       onPressed: () {
                        
-                        
+                   
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (ctx) {
+                            return StudentFinalResultView(object,resolvedListOfQuestions.length,count_correct_ans, count_incorrect_ans);
+                          }),
+                        );
+
                         setState(() {
 
                         countCorrectAnswered =  0;
@@ -111,14 +109,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                           countdownTimer!.cancel();
                            myDuration = Duration(minutes: 1);
                           is_time_is_goingto_up = false;
-                        });
-
-                      
-                       Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (ctx) {
-                            return StudentFinalResultView();
-                          }),
-                        );
+                        });    
                       },
                       icon: const Icon(Icons.close),
                       label: Text(
@@ -487,8 +478,7 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                                       margin: EdgeInsets.symmetric(
                                           vertical: 30, horizontal: 35),
                                       padding: EdgeInsets.only(
-                                          top:
-                                              (current_selected_question_object!
+                                          top:(current_selected_question_object!
                                                           .question
                                                           .keys
                                                           .first ==
@@ -964,10 +954,11 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
                                                                       currentQuestionIndex =
                                                                           0;
                                                                         countdownTimer!.cancel();
-                                                                        openDialog_for_next_button(countCorrectAnswered, countInCorrectAnswered);
+                                                                        
+                                                                        openDialog_for_next_button(object, countCorrectAnswered, countInCorrectAnswered);
                                                                         countCorrectAnswered = 0;
                                                                         countInCorrectAnswered = 0;
-
+                                                                        
                                                                         setState(() {
                                                                           countCorrectAnswered;
                                                                           countInCorrectAnswered;
