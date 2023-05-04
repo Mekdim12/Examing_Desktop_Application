@@ -11,8 +11,7 @@ import './Models/StudentFavoriteModel.dart';
 import './Models/ScoreModel.dart';
 import 'package:desktop_window/desktop_window.dart';
 /*
-   Size size = await DesktopWindow.getWindowSize();
-    print(size);
+   
     await DesktopWindow.setWindowSize(Size(500,500));
 
     await DesktopWindow.setMinWindowSize(Size(400,400));
@@ -26,6 +25,8 @@ import 'package:desktop_window/desktop_window.dart';
     
  */
 Future<void> main() async {
+ 
+
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -73,6 +74,7 @@ Future<void> main() async {
 
  
   runApp(MyMainHompePage());
+  
 }
 
 class MyMainHompePage extends StatefulWidget {
@@ -88,11 +90,16 @@ class _MyMainHompePageState extends State<MyMainHompePage> {
     Hive.close();
     super.dispose();
   }
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+
         body: splashScreen(),
       ),
     );

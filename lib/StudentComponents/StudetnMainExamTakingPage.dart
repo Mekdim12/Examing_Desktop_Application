@@ -87,11 +87,25 @@ class StudentExamTakingPageState extends State<StudentExamTakingPageWidget> {
 					  backgroundColor:
 						  MaterialStatePropertyAll(Colors.redAccent)),
 				  onPressed: () {
+
+                       setState(() {
+
+                        countCorrectAnswered =  0;
+                        countInCorrectAnswered = 0;
+
+                          countdownTimer!.cancel();
+                           myDuration = Duration(minutes: 50);
+                          is_time_is_goingto_up = false;
+                        });    
+                      
+
             Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (ctx) {
                     return QuestionTypeChossingPage(flag_for_page, object);
                   }),
                 );
+
+
 				  },
 				  icon: const Icon(Icons.close),
 				  label: Text(
