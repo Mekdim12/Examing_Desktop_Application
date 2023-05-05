@@ -9,7 +9,8 @@ import './Models/StudentModels.dart';
 import './Models/QuestionTypeModel.dart';
 import './Models/StudentFavoriteModel.dart';
 import './Models/ScoreModel.dart';
-import 'package:desktop_window/desktop_window.dart';
+import 'package:window_manager/window_manager.dart';
+
 /*
    
     await DesktopWindow.setWindowSize(Size(500,500));
@@ -25,10 +26,12 @@ import 'package:desktop_window/desktop_window.dart';
     
  */
 Future<void> main() async {
- 
+  
 
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
+  // Must add this line.
+  await windowManager.ensureInitialized();
   
   await Hive.initFlutter();
   Hive.registerAdapter(QuestionAdapter());
@@ -72,7 +75,20 @@ Future<void> main() async {
 
   }
 
- 
+
+    WindowOptions windowOptions = WindowOptions(
+      size: Size(1750, 945),
+      minimumSize: Size(1650, 945),
+      maximumSize: Size(1800, 945),
+      center: true,
+     
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+
   runApp(MyMainHompePage());
   
 }

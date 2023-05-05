@@ -64,7 +64,7 @@ class StudentMainLandingState extends State<StudentMainLandingPageWidget> {
                             child: Row(
                               // mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("ለማንኛው ከሶፍትዌር ጋር የተያያዙ ስራዎች እንደሁም ማማክርን ጨምሮ የስልክ አፕልኬሽን፣\n ዊብሳይቶች፣ ቦት፣ ሶፍትዌሮች ከማማክር ጋር በተመጣጣኝ ዋጋ እንሰራለን።ለድርጅቶ ለሚያስፈልጉ\n ማንኛውም ሶፍትዌርች መስራት ማማከር አንዲሁም እጫጭር ስልጠና መሰጠት እንሰራለን። \nለተማሪዎች የፕሮግራሚንግ ስልጠና መስጠት አንዲሁም የማስተርስን ጨምሮ ፕሮጀክቶችን \nመስራት ለተጨማራ ጥያቄ በሚክተሉት እድራሻዎች ያግኙን ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, ),textAlign: TextAlign.justify,)],
+                                Text("ለማንኛው ከሶፍትዌር ጋር የተያያዙ ስራዎች እንደሁም ማማክርን ጨምሮ የስልክ አፕልኬሽን፣\n ዊብሳይቶች፣ ቦት፣ ሶፍትዌሮች ከማማክር ጋር በተመጣጣኝ ዋጋ እንሰራለን።ለድርጅቶ ለሚያስፈልጉ\n ማንኛውም ሶፍትዌርች መስራት ማማከር አንዲሁም እጫጭር ስልጠና መሰጠት እንሰራለን። \nለተማሪዎች የፕሮግራሚንግ ስልጠና መስጠት አንዲሁም የማስተርስን ጨምሮ ፕሮጀክቶችን \nመስራት ለተጨማሪ ጥያቄ በሚክተሉት እድራሻዎች ያግኙን ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, ),textAlign: TextAlign.justify,)],
                             ),),
 
                             Row(

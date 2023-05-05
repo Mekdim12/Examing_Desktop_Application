@@ -19,7 +19,7 @@ final dbstudentfav = StudentFavoriteTypeBox.getAllTheStudentFav();
 // Future<int> obj = db.add(question_object);
 
 Timer? countdownTimer;
-Duration myDuration = Duration(minutes: 25);
+Duration myDuration = Duration(minutes: 2);
 bool is_time_is_goingto_up = false;
 
 class StudentQuestionTypeSpecificTestingPageWidget extends StatefulWidget {
