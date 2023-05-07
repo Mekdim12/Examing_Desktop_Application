@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './adminLandingPage.dart';
 import './adminQuestionManagementMenuPage.dart';
 import './Admin_login_page.dart';
+import 'adminStudentManagementPage.dart';
 
 class SidebarDrawerWidget extends StatefulWidget {
   final int activa_page;
@@ -140,6 +141,35 @@ class _SidebarDrawerState extends State<SidebarDrawerWidget> {
                         },
                         child: const Text(
                           'Manage Question',
+                          style: TextStyle(
+                              color: Color.fromARGB(222, 29, 29, 29),
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.question_answer),
+                    horizontalTitleGap: 1,
+                    title: TextButton(
+                        style: (currentChoosenPage == 3)
+                            ? const ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Color.fromARGB(255, 207, 158, 215)),
+                                padding: MaterialStatePropertyAll(
+                                    EdgeInsets.all(25)),
+                                alignment: Alignment.centerLeft)
+                            : const ButtonStyle(
+                                padding: MaterialStatePropertyAll(
+                                    EdgeInsets.all(25)),
+                                alignment: Alignment.centerLeft),
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) {
+                              return AdminSideStudentManagementWidget();
+                            }),
+                          );
+                        },
+                        child: const Text(
+                          'Manage Student',
                           style: TextStyle(
                               color: Color.fromARGB(222, 29, 29, 29),
                               fontWeight: FontWeight.bold),

@@ -221,7 +221,7 @@ class TextBasedQuestionInsertingPageState
             margin: EdgeInsets.symmetric(
                 horizontal:
                     ((MediaQuery.of(context).size.width * 16) / 100) / 2,
-                vertical: ((MediaQuery.of(context).size.height * 8) / 100) / 2),
+                vertical: 10),
             child: Column(
               children: [
                 Container(

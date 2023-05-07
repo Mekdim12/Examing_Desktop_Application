@@ -77,10 +77,13 @@ Future<void> main() async {
 
 
     WindowOptions windowOptions = WindowOptions(
-      size: Size(1750, 945),
-      minimumSize: Size(1650, 945),
-      maximumSize: Size(1800, 945),
+      // size: Size(1650, 940),
+      // fullScreen: true,
+      title: "Driving License Exam Training Software",
+     // minimumSize: Size(1650, 940),
+      // maximumSize: Size(1800, 940),
       center: true,
+      
      
       titleBarStyle: TitleBarStyle.normal,
     );

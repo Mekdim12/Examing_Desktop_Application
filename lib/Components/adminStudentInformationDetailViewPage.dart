@@ -1,37 +1,36 @@
-import 'package:flutter/material.dart';
-import '../Models/ScoreModel.dart';
-import '../Models/StudentModels.dart';
-import 'StudentMainLandingPage.dart';
-import 'package:flutter/material.dart';
-import '../Models/QuestionModel.dart';
-
-import 'package:diving_licence_traning_center_student/StudentComponents/StudentMainLandingPage.dart';
+import 'package:diving_licence_traning_center_student/Components/sideBarDrawer.dart';
 import 'package:flutter/material.dart';
 import '../Models/QuestionModel.dart';
 import '../Models/QuestionTypeModel.dart';
+import '../Models/ScoreModel.dart';
 import '../Models/StudentModels.dart';
 import '../Models/StudentFavoriteModel.dart';
-
+import './sideBarDrawer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'StudentFavQuestionDetailViewPage.dart';
 
+import 'Admin_login_page.dart';
+import 'adminStudentManagementPage.dart';
 
-class StudentScoreDisplayWidget extends StatefulWidget {
-   StudentScoreDisplayWidget(this.studentObject,{super.key});
+class AdminSideStudentManagementDetailWidget extends StatefulWidget {
+
+   AdminSideStudentManagementDetailWidget(this.studentObject);
    Student studentObject;
+
+
   @override
-  State<StudentScoreDisplayWidget> createState() => _StudentScoreDisplayState();
+  State<AdminSideStudentManagementDetailWidget> createState() =>
+      AdminSideStudentManagementDetailState();
 }
 
-class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
+class AdminSideStudentManagementDetailState extends State<AdminSideStudentManagementDetailWidget> {
+  
+
   @override
   Widget build(BuildContext context) {
-   Student studentObject = widget.studentObject;
+    Student studentObject = widget.studentObject;
 
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
     
-    Box<StudentScoreModel> allscoreInformation = StudentScoreBox.getAllStudentsScore();
+     Box<StudentScoreModel> allscoreInformation = StudentScoreBox.getAllStudentsScore();
     
     List value = [];
     allscoreInformation.toMap().forEach((key, values) {
@@ -58,62 +57,126 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
   }
 
 
-    return  Scaffold(
-    body:
-    Container(
+    
+    return Scaffold(
+     
+       appBar: AppBar(
+        leading:  ElevatedButton( child: Icon(Icons.backspace_rounded, color:  Colors.white,),onPressed: (){
+           Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminSideStudentManagementWidget();
+                }),
+           );    
+        },
+        style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(  Color(0xFF65647C))),
+
+        ),
+          foregroundColor: const Color(0xFFF5EBE0).withOpacity(1),
+          backgroundColor: const Color(0xFF65647C),
+          title: const Text(
+            'Detail Information',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          actions: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              child: IconButton(
+                onPressed: () {
+                   Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) {
+                  return AdminLoginPageWidget();
+                }),
+              );
+                },
+                icon: const Icon(Icons.logout),
+                iconSize: 35,
+              ),
+            ),
+          ],
+        ),
+
+      body:  Container(
+      
       constraints: const BoxConstraints.expand(),
       width: double.infinity,
       padding: const EdgeInsets.all(2),
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        stops: [0.2, 0.9, 0.4],
-        colors: [
-          Color.fromRGBO(255, 239, 186, 1),
-          Color.fromRGBO(255, 255, 255, 1),
-          Color.fromRGBO(255, 255, 255, 1),
-        ],
-      )),
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage('assets/images/backgroundEntrance.jpg'),
+          ),
+      ),  
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                width: 150,
-                height: 45,
-                child: ElevatedButton.icon(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.black38),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (ctx) {
-                          return StudentMainLandingPageWidget(studentObject);
-                        }),
-                      );
-                    },
-                    icon: const Icon(Icons.logout),
-                    label: const Text(
-                      "ወደ ኋላ ተመለስ",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    )),
-              ),
+              // Container(
+              //   margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+              //   width: 150,
+              //   height: 45,
+              //   child: ElevatedButton.icon(
+              //       style: ButtonStyle(
+              //         backgroundColor: MaterialStateProperty.all(Colors.black38),
+              //       ),
+              //       onPressed: () {
+              //         // Navigator.of(context).pushReplacement(
+              //         //   MaterialPageRoute(builder: (ctx) {
+              //         //     return StudentMainLandingPageWidget(object);
+              //         //   }),
+              //         // );
+              //       },
+              //       icon: const Icon(Icons.logout),
+              //       label: const Text(
+              //         "ወድ ኋላ; ተመለስ",
+              //         style:
+              //             TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              //       )),
+              // ),
+              
             ],
           ),
 
-          
-              Row(
+      Expanded(
+        child: 
+          Column(
+									children: [
+										Container(
+											margin: EdgeInsets.symmetric(vertical: 10),
+											child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                           Text("${studentObject.fullName}'s Information",
+												style: TextStyle(
+														fontFamily: 'quickSand',
+														decoration: TextDecoration.underline,
+														color: Colors.white,
+														fontWeight: FontWeight.bold,
+														fontSize: 40),
+										   	),
+                        Container(
+                          margin: EdgeInsetsDirectional.symmetric(horizontal: 25),
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [ElevatedButton( style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color.fromARGB(45, 101, 100, 124))),onPressed: (){},
+                       child: Icon(Icons.delete_forever, color: Colors.red, size: 45,))],
+                      ),
+                        )
+                      
+                      
+                        ],
+                      ),
+										), 
+
+                    Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                  
                   Container(
                     height: 260,
                     width: 350,
-                    margin: const EdgeInsets.symmetric(vertical: 30),
+                    margin: const EdgeInsets.symmetric(vertical: 5),
                     padding: const EdgeInsets.all(5),
                     child: Card(
                       shape: const RoundedRectangleBorder(
@@ -124,7 +187,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                             bottomLeft: Radius.circular(25)),
                       ),
                       borderOnForeground: true,
-                      color: const Color(0xFFBCEAD5),
+                      color: Color.fromARGB(208, 188, 234, 213),
                       // color: const Color.fromARGB(255, 188, 243, 209),
                       elevation: 10,
                       child: Column(
@@ -134,7 +197,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                               margin: const EdgeInsets.symmetric(vertical: 15)),
                            Text(
                             value.length.toString(),
-                            selectionColor: Color.fromARGB(255, 188, 243, 209),
+                            selectionColor:  Color.fromARGB(208, 188, 234, 213),
                             style: const TextStyle(
                                 letterSpacing: 5,
                                 fontFamilyFallback: ['OpenSans'],
@@ -173,7 +236,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                             bottomLeft: Radius.circular(25)),
                       ),
                       borderOnForeground: true,
-                      color: const Color(0xFFBCEAD5),
+                      color:  Color.fromARGB(208, 188, 234, 213),
                       // color: const Color.fromARGB(255, 188, 243, 209),
                       elevation: 10,
                       child: Column(
@@ -183,8 +246,8 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                               margin: const EdgeInsets.symmetric(vertical: 15)),
                            Text(
                             "${passedExamCount}",
-                            selectionColor: Color.fromARGB(255, 188, 243, 209),
-                            style: TextStyle(
+                            selectionColor:  Color.fromARGB(208, 188, 234, 213),
+                            style: const TextStyle(
                                 letterSpacing: 5,
                                 fontFamilyFallback: ['OpenSans'],
                                 wordSpacing: 545,
@@ -208,8 +271,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                       ),
                     ),
                   ),
-                 
-                  
+                                  
                   Container(
                     height: 260,
                     width: 350,
@@ -224,7 +286,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                             bottomLeft: Radius.circular(25)),
                       ),
                       borderOnForeground: true,
-                      color: const Color(0xFFBCEAD5),
+                      color:  Color.fromARGB(208, 188, 234, 213),
                       // color: const Color.fromARGB(255, 188, 243, 209),
                       elevation: 10,
                       child: Column(
@@ -235,7 +297,7 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                               margin: const EdgeInsets.symmetric(vertical: 15)),
                            Text(
                             "${failedExamCount}",
-                            selectionColor: Color.fromARGB(255, 188, 243, 209),
+                            selectionColor: Color.fromARGB(208, 188, 234, 213),
                             style: TextStyle(
                                 letterSpacing: 5,
                                 fontFamilyFallback: ['OpenSans'],
@@ -263,37 +325,20 @@ class _StudentScoreDisplayState extends State<StudentScoreDisplayWidget> {
                 ],
               ),
 
-              Expanded(
-        child: 
-          Column(
-									children: [
-										Container(
-											margin: EdgeInsets.symmetric(vertical: 50),
-											child: const Text(
-												"የፈተና መረጃዎች ዝርዝር",
-												style: TextStyle(
-														fontFamily: 'quickSand',
-														decoration: TextDecoration.underline,
-														color: Colors.black,
-														fontWeight: FontWeight.bold,
-														fontSize: 22),
-											),
-										),
-                   Expanded(child: ListItemBuilderWidget(studentObject),),
+
+
+                     Expanded(child: ListItemBuilderWidget(studentObject),),
+
 									],
 								)),
+          
         ],
-        
-        
-        )
-           
-    ),);
-
-
-       
-       
-}}
-
+      ),
+      
+    )
+    );
+  }
+}
 
 
 
@@ -341,7 +386,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 
     });
 
-    // print(DateTime.parse(value[index].first[0]).year.toString());
+  
 
 		if(value.length <=  0){
 			return Center(
@@ -349,7 +394,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 										margin: EdgeInsets.only(bottom: 150),
 										alignment: Alignment.center,
 										child: const Text(
-											"በርሶ መታወቂያ ቁጥር የተመዘገበ መረጃ የለም",
+											"በዚ መታወቂያ ቁጥር የተመዘገበ መረጃ የለም",
 											style: TextStyle(
 													color: Colors.redAccent,
 													fontFamily: 'quickSand',
@@ -372,11 +417,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 									itemCount: value.length,
 									itemBuilder: (context, int index) => InkWell(
 										onTap: () {
-											// Navigator.of(context).push(
-											// 	MaterialPageRoute(builder: (ctx) {
-											// 		return StudentFavoriteDetailPageWidget(studentObject,  value[index]);
-											// 	}),
-											// );
+											
 										},
 										onHover: (val) {
 											indexOfHovered = index;
@@ -516,7 +557,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 										margin: EdgeInsets.only(bottom: 150),
 										alignment: Alignment.center,
 										child: const Text(
-											"በርሶ የተመዘገበ መረጃ የለም",
+											"በዚ መታወቂያ ቁጥር የተመዘገበ መረጃ የለም",
 											style: TextStyle(
 													color: Colors.redAccent,
 													fontFamily: 'quickSand',
@@ -534,7 +575,7 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 							margin: EdgeInsets.only(bottom: 150),
 							alignment: Alignment.center,
 							child: const Text(
-								"በርሶ የተመዘገበ መረጃ የለም",
+								"በዚ መታወቂያ ቁጥር የተመዘገበ መረጃ የለም",
 								style: TextStyle(
 										color: Colors.redAccent,
 										fontFamily: 'quickSand',

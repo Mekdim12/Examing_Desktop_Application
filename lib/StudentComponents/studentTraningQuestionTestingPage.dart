@@ -254,7 +254,7 @@ class StudentQuestionTypeSpecificTestingPageState
 					  ),
 					  borderRadius: BorderRadius.circular(25)),
 				  margin: const EdgeInsets.only(
-					  bottom: 10, left: 100, right: 100, top: 35),
+					  bottom: 10, left: 100, right: 100, top: 5),
 				  height: 650,
 				  child: Card(
 					  shadowColor: Colors.black,
@@ -281,7 +281,7 @@ class StudentQuestionTypeSpecificTestingPageState
 							),
 						  ),
 						  Positioned(
-							left: 1250,
+							left: 1050,
 							top: -8,
 							child: Container(
 							  padding: EdgeInsets.only(
@@ -1169,7 +1169,7 @@ class TimeCounterState extends State<TimeCounterWidget> {
 	  if (this.mounted) {
 		setState(() {
 		  countdownTimer!.cancel();
-		  myDuration = Duration(minutes: 25);
+		  myDuration = Duration(minutes: 2);
 		  is_time_is_goingto_up = false;
 		});
 
