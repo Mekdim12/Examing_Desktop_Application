@@ -159,9 +159,53 @@ class AdminSideStudentManagementDetailState extends State<AdminSideStudentManage
                           margin: EdgeInsetsDirectional.symmetric(horizontal: 25),
                           child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [ElevatedButton( style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color.fromARGB(45, 101, 100, 124))),onPressed: (){},
-                       child: Icon(Icons.delete_forever, color: Colors.red, size: 45,))],
-                      ),
+                        children: [
+                          ElevatedButton( 
+                            style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color.fromARGB(45, 101, 100, 124))),
+                            onPressed: () async{
+                                 Box<StudentScoreModel> allscoreInformation_ = StudentScoreBox.getAllStudentsScore();
+
+                              
+                                
+                                for(var scores in allscoreInformation_.toMap().keys){
+                                        if(allscoreInformation_.toMap()[scores]?.studentScore.keys.first.toString() == studentObject.id_number.toString()){
+                                              await allscoreInformation_.delete(scores);
+                                        }
+                                }
+
+                               Box<StudentFavoriteTypeModel> studentFav = StudentFavoriteTypeBox.getAllTheStudentFav();
+                                for(var favoriteInformation in studentFav.toMap().keys){
+                                  if(studentFav.toMap()[favoriteInformation]?.studentFav.keys.first.toString() == studentObject.id_number.toString()){
+                                       await studentFav.delete(favoriteInformation);
+                                  }
+
+                                }
+
+                               Box<Student> allstudents = StudentBox.getAllTheStudentsInfo();
+
+                               for( var studentInfokey in allstudents.toMap().keys){
+                                if(allstudents.toMap()[studentInfokey]?.id_number.toString() == studentObject.id_number.toString()){
+                                  await allstudents.delete(studentInfokey);
+                                }
+                               }
+
+
+
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (ctx) {
+                                      return AdminSideStudentManagementWidget();
+                                    }),
+                              );
+
+
+
+
+
+         
+                             },
+                            child: Icon(Icons.delete_forever, color: Colors.red, size: 45,)
+                            )],
+                            ),
                         )
                       
                       

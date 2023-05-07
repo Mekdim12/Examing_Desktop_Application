@@ -84,7 +84,7 @@ class StudentResultViewPageState extends State<StudentFinalResultView> {
     bool isFinished = widget.isFinished;
 
 
-    int averageQuestion =( double.parse( ((tottalQuestion * 2 ) * ( 75/100)).toString())).toInt();
+    int averageQuestion =( double.parse( ((tottalQuestion * 2 ) * ( 74/100)).toString())).toInt();
  
     bool checkerifPassedOrFailed = correctAnswer * 2 >= averageQuestion;
     

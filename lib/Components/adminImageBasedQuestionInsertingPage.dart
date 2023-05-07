@@ -356,7 +356,7 @@ class _ImageBasedQuesionInsertingPageState
             margin: EdgeInsets.symmetric(
                 horizontal:
                     ((MediaQuery.of(context).size.width * 16) / 100) / 2,
-                vertical: ((MediaQuery.of(context).size.height * 8) / 100) / 2),
+                vertical: 5),
             child: Column(
               children: [
                 Container(
@@ -388,7 +388,7 @@ class _ImageBasedQuesionInsertingPageState
                         ],
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 25),
+                        margin: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       Row(
                         children: [

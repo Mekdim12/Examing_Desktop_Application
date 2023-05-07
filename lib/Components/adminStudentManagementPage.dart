@@ -139,43 +139,6 @@ class _ListItemBuilderState extends State<ListItemBuilderWidget> {
 	bool isDeleteButtonPressed = false;
 	bool isDeleteHover = false;
 
-  List type_of_question = ['ሞተርሳይክል',
-							'አዉቶሞቢል',
-							'ታክሲ 1',
-							'ታክሲ 2',
-							'ደረቅ 1',
-							'ደረቅ 2', 
-							'ደረቅ 3',
-							'ህዝብ 1',
-							'ህዝብ 2'
-							];
-
-	String typeIdentifier(String currentQuestionkey){
-	 
-		Box<QuestionTypeModel> dbs = QuestionTypeBox.getAllTheQuestionsTypes();
-		dbs.toMap().forEach((key, value) {
-			if (value.question_type_items.keys.toList()[0].toString() == currentQuestionkey){
-				currentQuestionkey = type_of_question[int.parse(value.question_type_items.values.toList()[0].toString())-1].toString();
-			}
-		});
-
-		return currentQuestionkey;	
-	}
-
-
-	List<Question> listOfItemsDataBaseFetcher(int flag) {
-		Box<Question> db = QuestionBox.getAllTheQuestions();
-    List<Question> temporaryHolder = [];
-
-		db.toMap().forEach((key, value) {
-			if (value.exam_type == flag) {
-				temporaryHolder.add(value);
-			}
-		});
-
-		return temporaryHolder;
-	}
-
 	@override
 	Widget build(BuildContext context) {
 		    
